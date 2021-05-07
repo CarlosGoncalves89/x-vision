@@ -5,25 +5,40 @@
  */
 package controller;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import model.Costumer;
 import model.DbConnection;
+import model.Movie;
 
 /**
  *
  * @author user
  */
 public class Controller {
-    
-    private DbConnection connection;
+ 
+    private final DbConnection dbConnection;
+    private final List<Movie> movies; 
     
     public Controller() throws SQLException{
-        this.connection = new DbConnection();
+        this.movies = new ArrayList<>();
+        this.dbConnection = DbConnection.getConnection();
     }
     
-    public ResultSet query(){
-        ResultSet rs = this.connection.fetch("Select id,name,description,thumbnail from movies where taken = 0");
-        return rs;
+    public List<Movie> listMovies(){
+        return this.movies;
     }
     
+    public boolean rentMovie(Movie movie, Costumer costumer, String offerCode){
+        return false; 
+    }
+    
+    public boolean checkoutMovie(Movie movie){
+        return false;
+    }
+    
+    public void createPayment(){
+        
+    }
 }
