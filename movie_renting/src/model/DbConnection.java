@@ -17,47 +17,23 @@ import java.sql.SQLException;
  * @author thiag
  */
 public class DbConnection {
+
+    private static final String DB_NAME = "movies"; 
+    private static final String USER = "root"; 
+    private static final String PWD = "";
     
-    public Connection conn;
+    private static DbConnection dbConnection;
+    private Connection connection;
     
-    public DbConnection() throws SQLException
-    {
-        this.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/movies","root","");
-        System.out.println("Database connction successful!");
-       
+    private DbConnection() throws SQLException{
+       String url = "jdbc:mysql://localhost:3306/" + DB_NAME;
+       this.connection = DriverManager.getConnection(url, USER, PWD);
     }
     
-    public ResultSet fetch(String query)
-    {
-        try{
-            Statement stmt = (Statement) conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            return rs;
-        }catch(SQLException e){
-            e.printStackTrace();
-            return null;
+    public static DbConnection getConnection() throws SQLException{
+        if(dbConnection != null){
+            dbConnection = new DbConnection();
         }
-    }
-        public ResultSet fetch(String query, String email)
-    {
-        try{
-            PreparedStatement stmt = this.conn.prepareStatement(query);
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            return rs;
-        }catch(SQLException e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    public void exec(String query)
-    {
-        try{
-            Statement stmt = (Statement) conn.createStatement();
-            stmt.executeUpdate(query);
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
+        return dbConnection;
     }
 }

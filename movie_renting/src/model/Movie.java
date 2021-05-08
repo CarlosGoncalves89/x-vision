@@ -81,7 +81,5 @@ public class Movie {
                 ", thumbnail='" + thumbnail + '\'' +
                 '}';
     }
-    
-    
 }
 
