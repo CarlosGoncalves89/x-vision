@@ -14,5 +14,4 @@ public interface Model <T> {
     public void save();
     public void update();
     public T get(String property, String value);
-    
 }
