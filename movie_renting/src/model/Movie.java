@@ -15,71 +15,112 @@ import java.util.Objects;
  */
 public class Movie {
     
-    private Integer id;
-    private String name;
-    private String description;
+   private Integer id;
+    private String title; 
+    private String description; 
     private String thumbnail;
-
-    public Movie(Integer id, String name, String description, String thumbnail) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+    private Boolean available;
+    
+    public Movie(Integer id, String title, String description, String thumbnail){
+        setId(id);
+        setTitle(title); 
+        setDescription(description);
+        setThumbnail(thumbnail);
+        this.available = true;
     }
-
-    public Integer getId() {
-        return id;
+    
+    public void setId(Integer id){
+        if(id > 0){
+            this.id = id; 
+        } else {
+            this.id = -1; 
+        }
     }
-
-    public void setId(Integer id) {
-        this.id = id;
+    
+    public Integer getId(){
+        return this.id;
     }
-
-    public String getName() {
-        return name;
+    
+    public void setTitle(String title){
+        title = title.trim();
+        if(title.length() > 3){
+            title = title.toUpperCase();
+            this.title = title; 
+        } else {
+            this.title = "NONE";
+        }
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public String getTitle(){
+        return this.title; 
     }
-
-    public String getDescription() {
-        return description;
+    
+    
+    public void setDescription(String description){
+        description = description.trim();
+        if(description.length() > 10 && description.length() < 500){
+            this.description = description;
+        }else{
+            this.description = "No description available";
+        }
     }
-
-    public void setDescription(String description) {
-        this.description = description;
+    
+    public String getDescription(){
+        return this.description;
     }
-
-    public String getThumbnail() {
-        return thumbnail;
+    
+    public void setThumbnail(String thumbnailURI){
+        thumbnailURI = thumbnailURI.trim();
+        if(thumbnailURI.length() > 7 && thumbnailURI.startsWith("http")){
+            this.thumbnail = thumbnailURI;
+        }else{
+            this.thumbnail = "No thumbnail uri available";
+        }
     }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+    
+    public String getThumbnail(){
+        return this.thumbnail;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Movie movie = (Movie) o;
-        return Objects.equals(id, movie.id) && Objects.equals(name, movie.name) && Objects.equals(description, movie.description) && Objects.equals(thumbnail, movie.thumbnail);
+    
+    public boolean isAvailable(){
+        return this.available; 
+    }
+    
+    public void setAvailable(Boolean available){
+        this.available = available;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, thumbnail);
+        int hash = 5;
+        hash = 47 * hash + Objects.hashCode(this.id);
+        hash = 47 * hash + Objects.hashCode(this.title);
+        hash = 47 * hash + Objects.hashCode(this.description);
+        hash = 47 * hash + Objects.hashCode(this.thumbnail);
+        hash = 47 * hash + Objects.hashCode(this.available);
+        return hash;
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Movie other = (Movie) obj;
+        return true;
+    }
+    
+
+    @Override
     public String toString() {
-        return "Movie{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", thumbnail='" + thumbnail + '\'' +
-                '}';
+        return "Movie{" + "id=" + id + ", title=" + title + ", description=" + 
+                description + ", thumbnail=" + thumbnail + ", available=" + available + '}';
     }
     
     
