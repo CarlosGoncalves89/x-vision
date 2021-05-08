@@ -3,10 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/thiag/OneDrive/Documentos/NetBeansProjects/x-vision/movie_renting/src/view/XVisionApplication.java</file>
-            <file>file:/C:/Users/thiag/OneDrive/Documentos/NetBeansProjects/x-vision/movie_renting/src/model/DbConnection.java</file>
-            <file>file:/C:/Users/thiag/OneDrive/Documentos/NetBeansProjects/x-vision/movie_renting/src/controller/Controller.java</file>
-            <file>file:/C:/Users/thiag/OneDrive/Documentos/NetBeansProjects/x-vision/movie_renting/src/model/Owner.java</file>
+            <file>file:/C:/Users/user/Desktop/x-vision/movie_renting/src/controller/Controller.java</file>
+            <file>file:/C:/Users/user/Desktop/x-vision/movie_renting/src/model/User.java</file>
+            <file>file:/C:/Users/user/Desktop/x-vision/movie_renting/src/model/Rent.java</file>
+            <file>file:/C:/Users/user/Desktop/x-vision/movie_renting/src/model/Movie.java</file>
+            <file>file:/C:/Users/user/Desktop/x-vision/movie_renting/src/model/Owner.java</file>
         </group>
     </open-files>
 </project-private>
