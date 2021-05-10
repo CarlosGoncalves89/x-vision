@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author user
+ * @author thiag
  */
 public class Rental {
     
