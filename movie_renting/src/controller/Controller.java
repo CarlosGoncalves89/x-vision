@@ -1,42 +1,56 @@
 /*
- * Controller handles the views requests. 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package controller;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import model.Costumer;
-import model.DbConnection;
+import model.Customer;
 import model.Movie;
 
 /**
  *
- * @author user
+ * @author 
  */
 public class Controller {
- 
-    private final DbConnection dbConnection;
-    private final List<Movie> movies; 
+    
+    private List<Movie> movies; 
     
     public Controller() throws SQLException{
-        this.movies = new ArrayList<>();
-        this.dbConnection = DbConnection.getConnection();
+        this.movies = null; 
     }
     
+    /**
+     * @return 
+    */
     public List<Movie> listMovies(){
+        if(this.movies == null){
+            Movie movie = new Movie();
+            this.movies = movie.list("available", "1");
+        }
         return this.movies;
     }
     
-    public boolean rentMovie(Movie movie, Costumer costumer, String offerCode){
-        return false; 
-    }
+  
     
     public boolean checkoutMovie(Movie movie){
         return false;
     }
     
-    public void createPayment(){
-        
+ 
+    
+    private Customer getCustomer(String cardNumber, String cvv, String email){
+        Customer customer = new Customer();
+        customer = customer.get("card_number", cardNumber);
+        if(customer == null)
+           customer = new Customer(cardNumber, cvv, email, 1);
+        return customer;
     }
+    
+    
 }
