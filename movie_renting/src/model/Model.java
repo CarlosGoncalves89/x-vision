@@ -5,13 +5,34 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
- * @author user
+ * @author Carlos
+ * @param <T>
  */
+
 public interface Model <T> {
 
     public void save();
+    
+    /***/
     public void update();
+    
+    /**
+     * @param property
+     * @param value
+     * @return */
     public T get(String property, String value);
+<<<<<<< HEAD
 }
+=======
+    
+    /**
+     * @param property
+     * @param value
+     * @return */
+    public List<T> list(String property, String value);
+}
+>>>>>>> c00e5e1... Update Model interface
