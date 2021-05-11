@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @thiag 
+ * @thiag
  */
 public class DbConnection {
     
