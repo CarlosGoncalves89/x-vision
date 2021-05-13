@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Customer represents a non-subscribed person that uses the machine
  * @thiag 
  */
 public class Customer implements Model<Customer>{
