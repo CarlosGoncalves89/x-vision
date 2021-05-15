@@ -38,39 +38,46 @@ public class Controller {
     
     /**
      *
-     * @param movies
+     * @param movieId
+     * @param cardNumber
+     * @param cvv
+     * @param email
+     * @param offerCode 
+     * @throws exception.InvalidNumberMoviesException 
      */
-    public boolean rentMovies(List<Integer> movies, String cardNumber, String cvv, String email, String offerCode){
+    public void addMovie(Integer movieId, String cardNumber, String cvv, String email) throws InvalidNumberMoviesException{
         
         Movie movie = new Movie(); 
-        Customer customer = this.getCustomer(cardNumber, cvv, email);
+        customer = this.getCustomer(cardNumber, cvv, email);
+        int moviesAmount = customer.getNumberOpenRentals() + 1;
         
         LocalDateTime rentalDate = LocalDateTime.now();
-        LocalDateTime expectedRetunDate = getExpectedRetunDate(rentalDate, customer, movies.size());
+        LocalDateTime expectedRetunDate = getExpectedRetunDate(rentalDate, customer, moviesAmount);
        
-        if(!customer.isFirstRental()){
-            if(movies.size() > 0 && movies.size() <= 4){
-                for(Integer m : movies){
-                    Movie m1 = movie.get("movie_id", String.valueOf(m));
-                    customer.rent(m1, rentalDate, expectedRetunDate, offerCode);
-                }
-                customer.save();
-            } else{
-                //throw
-            }
-        } else {
-           if(movies.size() > 0 && movies.size() <= 2){
-               for(Integer m : movies){
-                    Movie m1 = movie.get("movie_id", String.valueOf(m));
-                    customer.rent(m1, rentalDate, expectedRetunDate, offerCode);
-                }
-               customer.save();
-           }else{
-               
-           }
+        if(checkFirstRentalRules(customer, moviesAmount)){
+            Movie m1 = movie.get("movie_id", String.valueOf(movieId));
+            customer.rent(m1, rentalDate, expectedRetunDate);
+            
+        }else {
+            String message = String.format("Invalid Number of Movies in the Shopping Basket: %d."
+                    + "If this is your first time renting, you can only rent the maximum number of 2 movies, otherwise the maximum is 4.", moviesAmount);
+            throw new InvalidNumberMoviesException(message);
         }
-        
-        return false; 
+    }
+    
+    public void removeMovie(Integer movieId){
+        this.customer.removeRental(movieId);
+    }
+    
+    
+    public List<String[]> listCustomerMovies(){
+        List<Movie> movies = customer.listOpenRentalMovies();
+        List<String[]> moviesString = new ArrayList<>();
+        for(Movie m: movies){
+            String [] mString = {String.valueOf(m.getId()), m.getTitle(), m.getDescription()};
+            moviesString.add(mString);
+        }
+        return moviesString;
     }
     
     public boolean checkoutMovie(Movie movie){
