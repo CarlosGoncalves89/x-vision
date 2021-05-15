@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.sql.ResultSet;
@@ -14,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Movie is the dvd disc that will be rented for a customer. 
  * @carlos 
  */
 public class Movie implements Model <Movie> {
@@ -25,10 +20,21 @@ public class Movie implements Model <Movie> {
     private String thumbnail;
     private Integer available;
     
+    /***
+     * Default Movie's constructor initializes the movie as available.
+     */
     public Movie(){
         this.available = 1;
     }
     
+    /**
+     * Movie's constructor initializes the movie with an id, title, description
+     * and thumbnail. 
+     * @param id - disc id
+     * @param title - movie title
+     * @param description - movie short description
+     * @param thumbnail - uri of the image
+     */
     public Movie(Integer id, String title, String description, String thumbnail){
         setId(id);
         setTitle(title); 
@@ -37,6 +43,10 @@ public class Movie implements Model <Movie> {
         this.available = 1;
     }
     
+    /**
+     * Sets the id if its greater than zero. 
+     * @param id movie disc code
+     */
     public void setId(Integer id){
         if(id > 0){
             this.id = id; 
@@ -45,10 +55,18 @@ public class Movie implements Model <Movie> {
         }
     }
     
+    /**
+     * Returns the movie id. 
+     * @return movie id
+     */
     public Integer getId(){
         return this.id;
     }
     
+    /**
+     * Sets Movie's title if the movie length is greater than 3 caracteres.
+     * @param title movie title
+     */
     public void setTitle(String title){
         title = title.trim();
         if(title.length() > 3){
@@ -59,24 +77,40 @@ public class Movie implements Model <Movie> {
         }
     }
     
+    /**
+     * Returns the movie's title.
+     * @return Movie's title.
+     */
     public String getTitle(){
         return this.title; 
     }
     
     
+    /**
+     * Sets the description if its length is greater than 10 and less than 255.
+     * @param description short movie description
+     */
     public void setDescription(String description){
         description = description.trim();
-        if(description.length() > 10 && description.length() < 500){
+        if(description.length() > 10 && description.length() <= 255){
             this.description = description;
         }else{
             this.description = "No description available";
         }
     }
     
+    /**
+     * Returns the short movie's description
+     * @return Movie's description
+     */
     public String getDescription(){
         return this.description;
     }
     
+    /**
+     * Sets the thumbnail uri if its length is greater 7 characteres and contains http. 
+     * @param thumbnailURI uri
+     */
     public void setThumbnail(String thumbnailURI){
         thumbnailURI = thumbnailURI.trim();
         if(thumbnailURI.length() > 7 && thumbnailURI.startsWith("http")){
@@ -86,14 +120,26 @@ public class Movie implements Model <Movie> {
         }
     }
     
+    /**
+     * 
+     * @return 
+     */
     public String getThumbnail(){
         return this.thumbnail;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public boolean isAvailable(){
         return this.available == 1; 
     }
     
+    /**
+     * 
+     * @param available 
+     */
     public void setAvailable(boolean available){
         if(available)
             this.available = 1;
@@ -101,6 +147,9 @@ public class Movie implements Model <Movie> {
             this.available = 0;
     }
 
+    /**
+     * 
+     */
     @Override
     public void save() {
         
@@ -116,6 +165,9 @@ public class Movie implements Model <Movie> {
         }
     }
 
+    /**
+     * 
+     */
     @Override
     public void update() {
         String updateSql = String.format("update movie set title = '%s', description = '%s', "
@@ -129,6 +181,12 @@ public class Movie implements Model <Movie> {
         }
     }
 
+    /***
+     * 
+     * @param property
+     * @param value
+     * @return 
+     */
     @Override
     public Movie get(String property, String value) {
         
@@ -158,6 +216,12 @@ public class Movie implements Model <Movie> {
         return movie;
     }
 
+    /**
+     * 
+     * @param property
+     * @param value
+     * @return 
+     */
     @Override
     public List<Movie> list(String property, String value) {
         
@@ -188,6 +252,10 @@ public class Movie implements Model <Movie> {
         return movies;
     }
 
+    /**
+     * 
+     * @return 
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -199,6 +267,11 @@ public class Movie implements Model <Movie> {
         return hash;
     }
 
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -214,6 +287,10 @@ public class Movie implements Model <Movie> {
         return true;
     }
 
+    /***
+     * 
+     * @return 
+     */
     @Override
     public String toString() {
         return "Movie{" + "id=" + id + ", title=" + title + ", description=" + description + 

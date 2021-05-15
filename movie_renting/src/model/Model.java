@@ -1,17 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.sql.SQLException;
 import java.util.List;
 
 /**
- *
- * @author Carlos 
- * @param <T>
+ * Models represents any type (or table) thats its objects will be stored or manipulated in a database. 
+    @author Carlos 
+ * @param <T> T represents the Type name. 
  */
 public interface Model<T> {
     
@@ -19,30 +14,26 @@ public interface Model<T> {
      * Saves the entity object to a database, file or list using the attributes values. 
      */
     public void save() throws SQLException;
->>>>>>> de86cd0... Customer methods to return and checkout payment. 
     
     /**
-     * 
+     * Updates the entity object and store it in a database, file or list using the object state.  
      */
     public void update() throws SQLException;
     
-    /**
-     * @param property
-     * @param value
-     * @return */
-<<<<<<< HEAD
-    public T get(String property, String value);
-<<<<<<< HEAD
-}
-=======
-=======
+    /*
+     * Retuns an object of Type T if the condition property = value is true.
+     * @param property - any field of the object
+     * @param value - value to a specific field.
+     * @return a T object
+     */
+
     public T get(String property, String value) throws SQLException;
->>>>>>> de86cd0... Customer methods to return and checkout payment. 
     
     /**
-     * @param property
-     * @param value
-     * @return */
+     * Returns a list of objects of Type T if the condition property = value is true.
+     * @param property - any field of the object
+     * @param value - value to a specific field.
+     * @return a list of T objects
+     */
     public List<T> list(String property, String value) throws SQLException; 
 }
->>>>>>> c00e5e1... Update Model interface

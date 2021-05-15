@@ -14,7 +14,8 @@ import java.sql.Statement;
 
 
 /**
- *
+ * DbConnection represents a database class operation since create a JDBC connection to execute query and DML 
+ * operations as insert, update. 
  * @thiago 
  */
 public class DbConnection {
@@ -28,8 +29,9 @@ public class DbConnection {
     private int lastId;
     
     /**
-     * 
-     * @throws SQLException 
+     * Creates only one Connection object using the Singleton pattern. 
+     * @throws SQLException if the database not exists, connection privilages is not permitted 
+     * user and password is not correct. 
      */
     private DbConnection() throws SQLException{
        String url = "jdbc:mysql://localhost:3306/" + DB_NAME;
@@ -37,9 +39,10 @@ public class DbConnection {
     }
     
     /***
-     * 
-     * @return
-     * @throws SQLException 
+     * Implements the singleton methods;
+     * @return DbConnection object
+     * @throws SQLException SQLException if the database not exists, connection privilages is not permitted 
+     * user and password is not correct.  
      */
     public static DbConnection getDbConnection() throws SQLException{
         if(dbConnection == null){
@@ -49,9 +52,9 @@ public class DbConnection {
     }
     
     /**
-     *
-     * @param sql
-     * @return
+     * Returns a ResultSet object from a specific query 
+     * @param sql - select query
+     * @return a ResultSet object as the result of the query
      */
     public ResultSet query(String sql){
         Statement stmt; 
@@ -66,9 +69,9 @@ public class DbConnection {
     } 
     
     /***
-     * 
-     * @param sql 
-     * @return  
+     *  Executes the DML operations from a statement. 
+     * @param sql - insert, update and delete operation
+     * @return  the number of lines affected
      */
     public int execute(String sql) throws SQLException{
        
@@ -85,15 +88,15 @@ public class DbConnection {
     }
     
     /***
-     * 
-     * @return 
+     * Returns the last id inserted in database using this connection. 
+     * @return last id inserted
      */
     public int getLastId(){
        return this.lastId;
     }
     
     /***
-     * 
+     * Begins a transaction to a block of operations. 
      * @throws SQLException 
      */
     public void beginTransaction() throws SQLException{
@@ -101,7 +104,7 @@ public class DbConnection {
     }
     
     /**
-     * 
+     * Effetivates the transaction operations. 
      * @throws SQLException 
      */
     public void commit() throws SQLException{
@@ -109,7 +112,7 @@ public class DbConnection {
     }
     
     /***
-     * 
+     * Rolls back to the start point if the operation in a transaction failed. 
      * @throws SQLException 
      */
     public void rollback() throws SQLException{

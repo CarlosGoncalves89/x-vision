@@ -1,7 +1,3 @@
-/*
- * Customer class documentation. 
-    Created the documentation except the interface Model's methods. 
- */
 package model;
 
 import java.sql.ResultSet;
@@ -16,6 +12,7 @@ import java.util.logging.Logger;
 
 /**
  * Customer represents a person who rents a movie in X-vision machine. 
+ * 
  * @thiago
  */
 public class Customer implements Model<Customer>{
@@ -188,6 +185,10 @@ public class Customer implements Model<Customer>{
         return true;
     }
     
+    /**
+     * Returns a list of the Customer's open rentals. 
+     *  @return a list of rental that does not have the payment made.  
+     */
     public List<Movie> listOpenRentalMovies(){
         List<Movie> movies = new ArrayList<>();
         for(Rental rental : rentals){
@@ -198,6 +199,10 @@ public class Customer implements Model<Customer>{
         return movies;
     }
     
+    /**
+     * Removes a rental of a specified movie by its id if the rental is not finished.
+     * @param movieId the Movie's dvd code
+     */
     public void removeRental(int movieId){
         Rental current = null;
         for(Rental rental : rentals){
@@ -208,6 +213,10 @@ public class Customer implements Model<Customer>{
             rentals.remove(current);
     }
     
+    /**
+     * Returns the number of rentals without returns. 
+     * @return amount of rentals of the customer that was not finished. 
+     */
     public int getNumberOpenRentals(){
         int soma = 0;
         soma = this.rentals.stream().filter(rental -> (!rental.isFinished())).map(_item -> 1).reduce(soma, Integer::sum);
@@ -216,8 +225,8 @@ public class Customer implements Model<Customer>{
     
 
     /**
-     * Saves the customer object and new rentals associated to them. 
-     * 
+     * Saves the customer object, its rentals not finished and payments. 
+     *
      */
     @Override
     public void save() {
@@ -241,6 +250,7 @@ public class Customer implements Model<Customer>{
     }
 
     /***
+     * Updates the customer information, its rentals situation and payments. 
      * 
      */
     @Override
@@ -270,10 +280,10 @@ public class Customer implements Model<Customer>{
     }
 
     /**
-     * 
-     * @param property
-     * @param value
-     * @return 
+     * Returns a customer object if the condition property = value is true. 
+     * @param property - any customer field
+     * @param value - a correspondent customer field value
+     * @return a Customer object with its rentals and associated payments. 
      */
     @Override
     public Customer get(String property, String value) {
@@ -306,10 +316,10 @@ public class Customer implements Model<Customer>{
     }
 
     /***
-     * 
-     * @param property
-     * @param value
-     * @return 
+     * Returns a list of customers if the condition property = value is true. 
+     * @param property - any customer field
+     * @param value - a correspondent customer field value
+     * @return a Customer object with its rentals and associated payments. 
      */
     @Override
     public List<Customer> list(String property, String value) {
@@ -343,8 +353,8 @@ public class Customer implements Model<Customer>{
     }
 
     /**
-     * 
-     * @return 
+     * Returns hashcode using the customer attributes.
+     * @return an integer hash code. 
      */
     @Override
     public int hashCode() {
@@ -357,9 +367,9 @@ public class Customer implements Model<Customer>{
     }
 
     /**
-     * 
-     * @param obj
-     * @return 
+     * Returns if this object is equals to obj.
+     * @param obj an object
+     * @return if this object has the same state of obj
      */
     @Override
     public boolean equals(Object obj) {
@@ -377,7 +387,7 @@ public class Customer implements Model<Customer>{
     }
 
     /**
-     * 
+     * Returns a String representation of the object. 
      * @return 
      */
     @Override
