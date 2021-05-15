@@ -2,9 +2,11 @@ package view;
 
 
 import controller.Controller;
+import exception.InvalidNumberMoviesException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -46,8 +48,10 @@ public class Movie extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         moviesTable = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        btnAdd = new javax.swing.JButton();
+        btnBasket = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
 
@@ -77,17 +81,36 @@ public class Movie extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(moviesTable);
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jButton1.setText("Refresh");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnRefresh.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnRefresh.setText("Refresh");
+        btnRefresh.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                btnRefreshMouseClicked(evt);
+            }
+        });
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
             }
         });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Click a movie to Rent");
+
+        btnAdd.setText("Add to the Basket");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+
+        btnBasket.setText("See the Basket");
+        btnBasket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBasketActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -96,10 +119,15 @@ public class Movie extends javax.swing.JFrame {
             .addComponent(jScrollPane1)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jButton1))
+                .addComponent(btnRefresh))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnAdd)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnBasket)))
                 .addContainerGap(199, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -108,9 +136,14 @@ public class Movie extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(5, 5, 5)
-                .addComponent(jButton1)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE))
+                .addComponent(btnRefresh)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd)
+                    .addComponent(btnBasket))
+                .addContainerGap())
         );
 
         jMenuBar1.setBackground(new java.awt.Color(255, 0, 0));
@@ -146,35 +179,60 @@ public class Movie extends javax.swing.JFrame {
         this.dispose();
     }                                   
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {                                      
+    private void btnRefreshMouseClicked(java.awt.event.MouseEvent evt) {                                        
         // TODO add your handling code here:
         
-    }                                     
+    }                                       
 
     private void moviesTableMouseClicked(java.awt.event.MouseEvent evt) {                                         
         // TODO add your handling code here:
-        JTable source = (JTable)evt.getSource();
+        /*JTable source = (JTable)evt.getSource();
         int row = source.rowAtPoint( evt.getPoint() );
-        String s=source.getModel().getValueAt(row, 0)+"";
-        //new CheckOut(s).show();
-        this.dispose();
+        DefaultTableModel model = (DefaultTableModel) source.getModel();
+        
+        String id = model.getValueAt(row, 0).toString();
+        String title = model.getValueAt(row, 1).toString();
+        String description = model.getValueAt(row, 2).toString();
+        
+        String [] movie = {id, title, description};
+        CheckOut checkout = new CheckOut(controller, movie);
+        checkout.show();
+        this.dispose();*/
     }                                        
 
-    private static void info(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    private static void warning(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.WARNING_MESSAGE);
-    }
-    
-    private static void error(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.ERROR_MESSAGE);
-    }
-    
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        // TODO add your handling code here:
+        
+        DefaultTableModel model = (DefaultTableModel) moviesTable.getModel();
+        int row = moviesTable.getSelectedRow();
+        
+        String id = model.getValueAt(row, 0).toString();
+        String title = model.getValueAt(row, 1).toString();
+        String description = model.getValueAt(row, 2).toString();
+        
+        try {
+            controller.addMovie(Integer.valueOf(id), "", "", "");
+        } catch (InvalidNumberMoviesException ex) {
+           JOptionPane.showMessageDialog(null, ex.getMessage(), "Invalid Number of Movies Renting", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        model.removeRow(row);
+        model.fireTableDataChanged();
+        
+    }                                      
+
+    private void btnBasketActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        // TODO add your handling code here:
+        ShoppingBasket basket = new ShoppingBasket(controller);
+        basket.show();
+        this.dispose();
+    }                                         
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {                                           
+        // TODO add your handling code here:
+        initMoviesTable();
+    }                                          
+
   
     private void initMoviesTable(){
         List<String[]> movies = controller.listMovies();
@@ -223,7 +281,9 @@ public class Movie extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify                     
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnBasket;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
