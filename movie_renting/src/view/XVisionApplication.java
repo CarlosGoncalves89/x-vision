@@ -11,11 +11,13 @@ import java.sql.SQLException;
 
 /**
  *
- * @author thiag
+ * @author thiago
  */
 public class XVisionApplication {
     
-    public static void main(String [] args) throws SQLException{
-        Controller c = new Controller(); 
+    public static void main(String [] args) {
+        Controller controller = new Controller(); 
+        Welcome welcome = new Welcome(controller);
+        welcome.showFrame();
     }
 }
