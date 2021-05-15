@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.math.BigDecimal;
@@ -16,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Payment is a representation of any charges or receipts values. 
  * @thiago 
  */
 public class Payment implements Model<Payment> {
@@ -82,16 +77,31 @@ public class Payment implements Model<Payment> {
         }
     }
 
+    /**
+     * 
+     */
     @Override
     public void update() {
      
     }
 
+    /**
+     * 
+     * @param property
+     * @param value
+     * @return 
+     */
     @Override
     public Payment get(String property, String value) {
         return null;
     }
 
+    /**
+     * 
+     * @param property
+     * @param value
+     * @return 
+     */
     @Override
     public List<Payment> list(String property, String value) {
         String query = String.format("select rental_id, subtotal, discount, total,"

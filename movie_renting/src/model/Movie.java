@@ -121,23 +121,24 @@ public class Movie implements Model <Movie> {
     }
     
     /**
-     * 
-     * @return 
+     * Returns thumbnail uri
+     * @return uri
      */
     public String getThumbnail(){
         return this.thumbnail;
     }
     
     /**
-     * 
-     * @return 
+     * Returns if the movie is available.
+     * @return  true if available
+     * false otherwise
      */
     public boolean isAvailable(){
         return this.available == 1; 
     }
     
     /**
-     * 
+     * Sets if the movie is available
      * @param available 
      */
     public void setAvailable(boolean available){
@@ -148,7 +149,7 @@ public class Movie implements Model <Movie> {
     }
 
     /**
-     * 
+     * Saves Movie disc informations. 
      */
     @Override
     public void save() {
@@ -166,7 +167,7 @@ public class Movie implements Model <Movie> {
     }
 
     /**
-     * 
+     * Updates Movie disc informations.
      */
     @Override
     public void update() {
@@ -182,10 +183,10 @@ public class Movie implements Model <Movie> {
     }
 
     /***
-     * 
-     * @param property
-     * @param value
-     * @return 
+     * Returns a Movie object if the condition property = value is true. 
+     * @param property - any customer field
+     * @param value - a correspondent customer field value
+     * @return a Movie object with its rentals and associated payments. 
      */
     @Override
     public Movie get(String property, String value) {
@@ -217,10 +218,10 @@ public class Movie implements Model <Movie> {
     }
 
     /**
-     * 
-     * @param property
-     * @param value
-     * @return 
+      *Returns a list of movies if the condition property = value is true. 
+     * @param property - any customer field
+     * @param value - a correspondent customer field value
+     * @return a Customer object with its rentals and associated payments. 
      */
     @Override
     public List<Movie> list(String property, String value) {
@@ -253,8 +254,8 @@ public class Movie implements Model <Movie> {
     }
 
     /**
-     * 
-     * @return 
+         * Returns hashcode using the movie attributes.
+     * @return an integer hash code. 
      */
     @Override
     public int hashCode() {
@@ -268,9 +269,9 @@ public class Movie implements Model <Movie> {
     }
 
     /**
-     * 
-     * @param obj
-     * @return 
+     *  Returns if this object is equals to obj.
+     * @param obj an object
+     * @return if this object has the same state of obj 
      */
     @Override
     public boolean equals(Object obj) {

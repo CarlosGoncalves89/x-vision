@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import exception.InvalidNumberMoviesException;
@@ -18,7 +13,7 @@ import model.Movie;
 import model.Rental;
 
 /**
- *
+ * Controller receives the requests from view forms. 
  * @author 
  */
 public class Controller {
@@ -29,8 +24,10 @@ public class Controller {
     public Controller(){
         this.customer = new Customer();
     }
+    
     /**
-     * @return 
+     * Returns a list of movie without customer proposal rents. 
+     * @return the list of available movies with the baket movies to rent. 
     */
     public List<String[]> listMovies(){
        
@@ -52,7 +49,7 @@ public class Controller {
     }
     
     /**
-     *
+     * Adds a movie to a current customer user. 
      * @param movieId
      * @param cardNumber
      * @param cvv
@@ -80,6 +77,10 @@ public class Controller {
         }
     }
     
+    /**
+     * 
+     * @param movieId 
+     */
     public void removeMovie(Integer movieId){
         this.customer.removeRental(movieId);
     }

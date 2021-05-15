@@ -42,98 +42,169 @@ public class Rental implements Model<Rental> {
         this.payments = new ArrayList<>();
     }    
 
+    /**
+     * Default Rental constructor. 
+     */
     public Rental() {
         
     }
 
+    /**
+     * Returns the rental id
+     * @return 
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * Sets id
+     * @param id 
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     * Returns customer
+     * @return Customer
+     */
     public Customer getCustomer() {
         return customer;
     }
 
+    /**
+     * Returns movie
+     * @return movie rented
+     */
     public Movie getMovie() {
         return movie;
     }
 
+    /**
+     * Sets movie
+     * @param movie 
+     */
     public void setMovie(Movie movie) {
         this.movie = movie;
     }
 
-    public void setCustomer(Customer costumer) {
-        this.customer = costumer;
+    /**
+     * Sets customer
+     * @param customer 
+     */
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
+    /**
+     * Returns the payments
+     * @return 
+     */
     public List<Payment> getPayments() {
         return payments;
     }
 
+    /**
+     * Returns offerCode
+     * @return 
+     */
     public String getOfferCode() {
         return offerCode;
     }
-
+    
+    /**
+     * Sets offer code. 
+     * @param offerCode 
+     */
     public void setOfferCode(String offerCode) {
         offerCode = offerCode.trim();
         if(offerCode.length() > 0 && offerCode.length() <= 10)
             this.offerCode = offerCode;
     }
     
+    /**
+     * Sets rental date. 
+     * @param rentalDate 
+     */
     public void setRentalDate(LocalDateTime rentalDate){
         if(rentalDate != null){
             this.rentalDate = rentalDate;
         }
     }
     
+    /**
+     * Returns rental date. 
+     * @return rental date
+     */
     public LocalDateTime getRentalDate(){
         return this.rentalDate;
     }
     
+    /**
+     * Sets return date if its is after the rental date.
+     * @param returnDate return date. 
+     */
     public void setReturnDate(LocalDateTime returnDate){
         if(returnDate != null && returnDate.isAfter(this.rentalDate)){
             this.returnDate = returnDate;
         }
     }
     
+    /**
+     * 
+     * @return 
+     */
     public LocalDateTime getReturnDate(){
         return this.returnDate;
     }
     
-    public long diffDays(){
-        return 0;
-    }
 
     /**
-     *
-     * @return
+     * Returns the rental condition
+     * @return True - if is finished
+     * False - otherwise
      */
     public Boolean isFinished() {
         return finished;
     }
 
+    /**
+     * Finishes this rental. 
+     */
     public void finishRental() {
         if(this.finished)
             this.finished = true;
     }
     
+    /**
+     * Returns if the rental payment was made.
+     * @return true - if rentals' payment list if grater than 0.
+     */
     public boolean isPaymentDone(){
         return this.payments.size() > 0;
     }
 
+    /**
+     * Returns expected return date
+     * @return expected return date
+     */
     public LocalDateTime getExpectedReturnDate() {
         return expectedReturnDate;
     }
-
+    
+    /***
+     * Sets the Expected Return date if only the expected date is greater than rental date.
+     * @param expectedReturnDate expected return date. 
+     */
     public void setExpectedReturnDate(LocalDateTime expectedReturnDate) {
         if(expectedReturnDate != null && expectedReturnDate.isAfter(this.rentalDate))
             this.expectedReturnDate = expectedReturnDate;
     }
     
+    /**
+     * Does the first payment to rent a movie. 
+     */
     public void doFirstPayment(String offerCode){
         
         BigDecimal subtotal = new BigDecimal("2.99").setScale(2);
@@ -143,6 +214,11 @@ public class Rental implements Model<Rental> {
         this.payments.add(payment);
     }
 
+    /**
+     * Applies some offer code if the code is available to user for the customer.
+     * @param offerCode code to some offers
+     * @return the discount value from offer code.
+     */
     private BigDecimal applyDiscount(String offerCode){
         BigDecimal discount = null;
          if(customer.isFirstRental() && customer.isAvailableOfferCode(offerCode) && offerCode.equals("FREE123")){
@@ -154,6 +230,10 @@ public class Rental implements Model<Rental> {
          return discount;
     }
     
+    /***
+     * Saves the rental object and its payments
+     * @throws SQLException 
+     */
     @Override
     public void save() throws SQLException {
         
@@ -184,6 +264,10 @@ public class Rental implements Model<Rental> {
             movie.update();
     }
 
+    /**
+     * Updates the rental object and its payments. 
+     * @throws SQLException 
+     */
     @Override
     public void update() throws SQLException{
         
@@ -210,6 +294,12 @@ public class Rental implements Model<Rental> {
             dbConnection.execute(updateSql);
     }
 
+    /***
+     * Returns a Rental object if the condition property = value is true. 
+     * @param property - any customer field
+     * @param value - a correspondent customer field value
+     * @return a Movie object with its rentals and associated payments. 
+     */
     @Override
     public Rental get(String property, String value) {
         String query = String.format("select rental_id, movie_id, card_number, "
@@ -260,6 +350,12 @@ public class Rental implements Model<Rental> {
         return rental;
     }
 
+     /**
+      *Returns a list of rentals if the condition property = value is true. 
+     * @param property - any customer field
+     * @param value - a correspondent customer field value
+     * @return a Customer object with its rentals and associated payments. 
+     */
     @Override
     public List<Rental> list(String property, String value) {
          String query = String.format("select rental_id, movie_id, card_number, "
@@ -317,6 +413,12 @@ public class Rental implements Model<Rental> {
         return rentals;
     }
 
+    /**
+     * Returns the information about the returning movie action. 
+     * This method finishes the rental and process any needed charges payments. 
+     * @return information about the returning process.
+     * @throws SQLException 
+     */
     public String[] finish() throws SQLException {
         
         LocalDateTime returnDate = LocalDateTime.now(); 
