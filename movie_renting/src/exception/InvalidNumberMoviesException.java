@@ -7,7 +7,7 @@ package exception;
 
 /**
  *
- * @author 
+ * @author Carlos
  */
 public class InvalidNumberMoviesException extends Throwable {
 

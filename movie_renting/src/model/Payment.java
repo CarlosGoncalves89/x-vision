@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author thiag
+ * @thiago 
  */
 public class Payment implements Model<Payment> {
     
@@ -26,6 +26,7 @@ public class Payment implements Model<Payment> {
     private BigDecimal discount;
     private BigDecimal total;
     private LocalDateTime paymentDate; 
+    private boolean done; 
     
     public Payment(Rental rental, BigDecimal total){
         this.rental = rental; 
@@ -39,6 +40,7 @@ public class Payment implements Model<Payment> {
         this.total = total;
         this.paymentDate = paymentDate;
     }
+
     
     public Rental getRental() {
         return rental;
@@ -56,15 +58,25 @@ public class Payment implements Model<Payment> {
         this.total = total;
     }
 
+    public boolean isDone(){
+        return this.done; 
+    }
+    
     @Override
     public void save() {
+        
+        String subtotal = this.subtotal.setScale(2).toString().replace(",", ".");
+        String discount = this.discount.setScale(2).toString().replace(",", ".");
+        String total = this.total.setScale(2).toString().replace(",", ".");
+        Timestamp pdate = Timestamp.valueOf(this.paymentDate); 
+        
          String insert = String.format("insert into payment (rental_id, subtotal, "
-                + "discount, total, payment_date) values ('%d', '%2.2f', '%2.2f', '%2.2f', '%s')", 
-                this.rental.getId(), this.subtotal, this.discount, this.total, this.paymentDate.toString());
+                + "discount, total, payment_date) values ('%d', '%s', '%s', '%s', '%s')", 
+                this.rental.getId(), subtotal, discount, total, pdate);
         try {
-            
             DbConnection dbConnection = DbConnection.getDbConnection();
-            dbConnection.commit(insert);
+            dbConnection.execute(insert);
+            this.done = true;
         } catch (SQLException ex) {
             Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -77,7 +89,7 @@ public class Payment implements Model<Payment> {
 
     @Override
     public Payment get(String property, String value) {
-        return null; 
+        return null;
     }
 
     @Override
@@ -99,6 +111,7 @@ public class Payment implements Model<Payment> {
                 Timestamp pdate = rs.getTimestamp("payment_date");
                 LocalDateTime payment_date = pdate.toLocalDateTime();
                 payment = new Payment(rental, subtotal, discount, total, payment_date);
+                payment.done = true;
                 payments.add(payment);
             }
             

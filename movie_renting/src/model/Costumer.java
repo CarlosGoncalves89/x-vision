@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Customer class documentation. 
+    Created the documentation except the interface Model's methods. 
  */
 package model;
 
@@ -16,8 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Customer represents a non-subscribed person that uses the machine
- * @thiag 
+ * Customer represents a person who rents a movie in X-vision machine. 
+ * @thiago
  */
 public class Customer implements Model<Customer>{
     
@@ -27,107 +26,255 @@ public class Customer implements Model<Customer>{
     private int firstRental; 
     private List<Rental> rentals; 
     
+    /**
+     * Default constructor creates a customer to be used only with the Model's methods. 
+     * 
+     */
     public Customer(){
-        
+        this.rentals = new ArrayList<>();
+        this.firstRental = 1;
     }
     
-    public Customer(String card, String cvv){
-        setCardNumber(card);
+    /**
+     * Creates a customer using only the credit (or debit) card number and card 
+     * verification value. 
+     * @param cardNumber credit card number
+     * @param cvv card verification value
+    */
+    public Customer(String cardNumber, String cvv){
+        this();
+        setCardNumber(cardNumber);
         setCVV(cvv);
-        this.rentals = new ArrayList<>();
         this.firstRental = 1;
         this.email = "";
     }
 
-    public Customer(String cardNumber, String cvv, String email, int firstRental) {
-        this(cardNumber, cvv);
-        setEmail(email);
-    }
-
+    /**
+     * Creates a customer using only credit (or debit) card number, card 
+     * verification value (cvv) and if this customer is doing the 
+     * first rental.
+     * 
+     * @param cardNumber - credit (or debit) card number
+     * @param cvv - card verification value
+     * @param firstRental - if this is the first customer rental
+     */
     public Customer(String cardNumber, String cvv, int firstRental) {
         this(cardNumber, cvv);
         this.firstRental = firstRental;
     }
     
+        /**
+     * Creates a customer using only credit (or debit) card number, card 
+     * verification value (cvv), email address and if this customer is doing the 
+     * first rental. 
+     * @param cardNumber - credit (or debit) card number
+     * @param cvv - card verification value
+     * @param email - the costumer's email address (used to receive the receipt and/or news)
+     * @param firstRental - if this is the first customer rental
+     */
+    public Customer(String cardNumber, String cvv, String email, int firstRental) {
+        this(cardNumber, cvv, firstRental);
+        setEmail(email);
+    }
+
     
+    /**
+     * Sets a new card number value if the cardNumber has length between 12 and 16 digits.
+     * @param cardNumber - a credit (or debit) card number 
+     */
     public void setCardNumber(String cardNumber){       
         cardNumber = cardNumber.trim();
-        if(cardNumber.length() >= 13 && cardNumber.length() <= 16)
+        if(cardNumber.length() >= 12 && cardNumber.length() <= 16)
             this.cardNumber = cardNumber;
     }
     
+    /**
+     * Returns the card number. 
+     * @return a credit (or debit) card number. 
+     */
     public String getCardNumber(){
         return this.cardNumber;
     }
     
+    /***
+     * Sets a new card verification value to a Customer's card if cvv has length equals 3.  
+     * @param cvv - card verification value
+     */
     public void setCVV(String cvv){
         cvv = cvv.trim();
         if(cvv.length() == 3)
             this.cvv = cvv;
     }
     
+    /***
+     * Sets a new email address. Sets the new email value only if the email has 
+     * an '@' symbol and length less or equal than 40 caracters.
+     * @param email email address to receive the receipts or news movies messages.
+     */
     public void setEmail(String email){
         email = email.trim();
+        email = email.replaceAll(" ", "");
         if(email.contains("@") && email.length() <= 40)        
             this.email = email;
     }
     
+    /***
+     * Returns the customer email address or 'None' if the email is empty.
+     * @return the customer's email address 
+     */
     public String getEmail(){
         return this.email.length() == 0 ? "None" : this.email; 
     }
     
+    /**
+     * Returns if it is the first customer's rental. 
+     * @return 
+     *      if this is the first customer's rental. 
+     */
     public boolean isFirstRental(){
         return this.firstRental == 1;
     }
     
+    /**
+     * Updates customer status as a non-first use.
+     */
     public void updateFirstRental(){
         if(this.firstRental == 1)
             this.firstRental = 0;
     }
     
-    public void rent(Movie movie, LocalDateTime rentalDate, LocalDateTime expectedReturnDate, String offerCode){
-        Rental rental = new Rental(movie, this, offerCode, rentalDate, expectedReturnDate); 
-        rental.doFirstPayment(offerCode);
+    /**
+     * Rents a movie from a rentalDate until a expected return date.The customer
+ can use offer codes to get discounts in the total movie rental value. 
+     * @param movie the movie rented
+     * @param rentalDate the current date
+     * @param expectedReturnDate the rental date plus a number of days 
+     */
+    public void rent(Movie movie, LocalDateTime rentalDate, LocalDateTime expectedReturnDate){
+        Rental rental = new Rental(movie, this, "", rentalDate, expectedReturnDate); 
         movie.setAvailable(false);
         rentals.add(rental);
-        this.updateFirstRental();
     }
     
+    public void checkOut(String offerCode) throws SQLException{
+       
+        for(Rental rental: rentals){
+            if(!rental.isFinished() && !rental.isPaymentDone()){
+                rental.doFirstPayment(offerCode);
+                rental.getMovie().setAvailable(false);
+                
+            }
+        }
+        if(isFirstRental()){   
+            this.save();
+        }else{
+            for(Rental rental : rentals){
+                rental.save();
+            }
+        }
+    }
+    /**
+     * Returns if offercode was used in any other rental. 
+     * @param offerCode codes to get discounts
+     * @return True - if the offer code was never used.
+     * False - if any other rental used the offer code
+     */
     public boolean isAvailableOfferCode(String offerCode){
         for(Rental rental: rentals){
             if(rental.equals(offerCode)){
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
+    
+    public List<Movie> listOpenRentalMovies(){
+        List<Movie> movies = new ArrayList<>();
+        for(Rental rental : rentals){
+            if(!rental.isFinished() && !rental.isPaymentDone()){
+                movies.add(rental.getMovie());
+            }
+        }
+        return movies;
+    }
+    
+    public void removeRental(int movieId){
+        Rental current = null;
+        for(Rental rental : rentals){
+            if(!rental.isFinished() &&  rental.getMovie().getId() == movieId)
+                current = rental;
+        }
+        if(current != null)
+            rentals.remove(current);
+    }
+    
+    public int getNumberOpenRentals(){
+        int soma = 0;
+        soma = this.rentals.stream().filter(rental -> (!rental.isFinished())).map(_item -> 1).reduce(soma, Integer::sum);
+        return soma;
+    }
+    
 
+    /**
+     * Saves the customer object and new rentals associated to them. 
+     * 
+     */
     @Override
     public void save() {
-          String insert = String.format("insert into customer (card_number, cvv, "
+        String insert = String.format("insert into customer (card_number, cvv, "
                 + "email, first_rental) values ('%s', '%s', '%s', '%d')", 
                 this.cardNumber, this.cvv, this.email, this.firstRental);
+        DbConnection dbConnection = null;
+        System.out.println(insert);
         try {
-            DbConnection dbConnection = DbConnection.getDbConnection();
-            dbConnection.commit(insert);
+            dbConnection = DbConnection.getDbConnection();
+                dbConnection.execute(insert);
+                for(Rental rental : rentals){
+                    if(!rental.isFinished()){
+                        rental.save();
+                    }
+                }
         } catch (SQLException ex) {
+            ex.printStackTrace();
             Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /***
+     * 
+     */
     @Override
     public void update() {
          String updateSql = String.format("update customer set cvv = '%s', email = '%s', "
                 + "first_rental = '%d' where card_number = '%s'", 
                 this.cvv, this.email, this.firstRental, this.cardNumber);
+        DbConnection dbConnection = null;
         try {
-            DbConnection dbConnection = DbConnection.getDbConnection();
-            dbConnection.commit(updateSql);
+            dbConnection = DbConnection.getDbConnection();
+                dbConnection.execute(updateSql);
+                for(Rental rental : rentals){
+                    if(!rental.isFinished()){
+                        rental.update();
+                    }
+                }
         } catch (SQLException ex) {
+             try {
+                 dbConnection.rollback();
+             } catch (SQLException ex1) {
+                 Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex1);
+             } catch (NullPointerException ex1){
+                 Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex1);
+             }
             Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * 
+     * @param property
+     * @param value
+     * @return 
+     */
     @Override
     public Customer get(String property, String value) {
         
@@ -146,6 +293,9 @@ public class Customer implements Model<Customer>{
                 String cemail = rs.getString("email");
                 Integer cfirstRental = rs.getInt("first_rental");
                 customer = new Customer(ccardNumber, ccvv, cemail, cfirstRental);
+                Rental rental = new Rental();
+                rental.setCustomer(customer);
+                customer.rentals = rental.list("card_number", ccardNumber);
             }
             
         } catch (SQLException ex) {
@@ -155,6 +305,12 @@ public class Customer implements Model<Customer>{
         return customer;
     }
 
+    /***
+     * 
+     * @param property
+     * @param value
+     * @return 
+     */
     @Override
     public List<Customer> list(String property, String value) {
          String query = String.format("select card_number, cvv, email, first_rental from"
@@ -173,6 +329,9 @@ public class Customer implements Model<Customer>{
                 String cemail = rs.getString("email");
                 Integer cfirstRental = rs.getInt("first_rental");
                 Customer customer = new Customer(ccardNumber, ccvv, cemail, cfirstRental);
+                Rental rental = new Rental();
+                rental.setCustomer(customer);
+                customer.rentals = rental.list("card_number", ccardNumber);
                 customers.add(customer);
             }
             
@@ -183,6 +342,10 @@ public class Customer implements Model<Customer>{
         return customers;
     }
 
+    /**
+     * 
+     * @return 
+     */
     @Override
     public int hashCode() {
         int hash = 5;
@@ -193,6 +356,11 @@ public class Customer implements Model<Customer>{
         return hash;
     }
 
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -208,6 +376,10 @@ public class Customer implements Model<Customer>{
         return true;
     }
 
+    /**
+     * 
+     * @return 
+     */
     @Override
     public String toString() {
         return "Customer{" + "cardNumber=" + getCardNumber() + ", cvv=" + cvv + ","

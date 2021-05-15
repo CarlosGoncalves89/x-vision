@@ -5,34 +5,44 @@
  */
 package model;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  *
- * @author Carlos
+ * @author Carlos 
  * @param <T>
  */
-
-public interface Model <T> {
-
-    public void save();
+public interface Model<T> {
     
-    /***/
-    public void update();
+    /**
+     * Saves the entity object to a database, file or list using the attributes values. 
+     */
+    public void save() throws SQLException;
+>>>>>>> de86cd0... Customer methods to return and checkout payment. 
+    
+    /**
+     * 
+     */
+    public void update() throws SQLException;
     
     /**
      * @param property
      * @param value
      * @return */
+<<<<<<< HEAD
     public T get(String property, String value);
 <<<<<<< HEAD
 }
 =======
+=======
+    public T get(String property, String value) throws SQLException;
+>>>>>>> de86cd0... Customer methods to return and checkout payment. 
     
     /**
      * @param property
      * @param value
      * @return */
-    public List<T> list(String property, String value);
+    public List<T> list(String property, String value) throws SQLException; 
 }
 >>>>>>> c00e5e1... Update Model interface

@@ -11,12 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  *
- * @thiag
+ * @thiago 
  */
 public class DbConnection {
     
@@ -28,11 +27,20 @@ public class DbConnection {
     private Connection connection;
     private int lastId;
     
+    /**
+     * 
+     * @throws SQLException 
+     */
     private DbConnection() throws SQLException{
        String url = "jdbc:mysql://localhost:3306/" + DB_NAME;
        this.connection = DriverManager.getConnection(url, USER, PWD);
     }
     
+    /***
+     * 
+     * @return
+     * @throws SQLException 
+     */
     public static DbConnection getDbConnection() throws SQLException{
         if(dbConnection == null){
             dbConnection = new DbConnection();
@@ -62,24 +70,50 @@ public class DbConnection {
      * @param sql 
      * @return  
      */
-    public int commit(String sql){
+    public int execute(String sql) throws SQLException{
        
         PreparedStatement pstatement;
-        try{
-            pstatement = connection.prepareStatement(sql);
-            int result = pstatement.executeUpdate();
-            ResultSet generatedKeys = pstatement.getGeneratedKeys();
-            if(result > 0)
-                if(generatedKeys.next())
-                    this.lastId = (int) generatedKeys.getLong(1);
-            return result;
-        } catch (SQLException ex) {
-            Logger.getLogger(DbConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return -1;
-    }
         
+        pstatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+        int result = pstatement.executeUpdate();
+        ResultSet generatedKeys = pstatement.getGeneratedKeys();
+        if(result > 0)
+            if(generatedKeys.next())
+                this.lastId = (int) generatedKeys.getLong(1);
+        return result;
+    }
+    
+    /***
+     * 
+     * @return 
+     */
     public int getLastId(){
        return this.lastId;
     }
+    
+    /***
+     * 
+     * @throws SQLException 
+     */
+    public void beginTransaction() throws SQLException{
+        this.connection.setAutoCommit(false);
+    }
+    
+    /**
+     * 
+     * @throws SQLException 
+     */
+    public void commit() throws SQLException{
+        this.connection.commit();
+    }
+    
+    /***
+     * 
+     * @throws SQLException 
+     */
+    public void rollback() throws SQLException{
+        this.connection.rollback();
+    }
+   
 }

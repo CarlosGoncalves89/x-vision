@@ -6,9 +6,11 @@
 package model;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,7 +18,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author 
+ * @author Carlos 
  */
 public class Rental implements Model<Rental> {
     
@@ -40,7 +42,7 @@ public class Rental implements Model<Rental> {
         this.payments = new ArrayList<>();
     }    
 
-    Rental() {
+    public Rental() {
         
     }
 
@@ -56,7 +58,6 @@ public class Rental implements Model<Rental> {
         return customer;
     }
 
-    
     public Movie getMovie() {
         return movie;
     }
@@ -65,11 +66,7 @@ public class Rental implements Model<Rental> {
         this.movie = movie;
     }
 
-    public Customer getCostumer() {
-        return customer;
-    }
-
-    public void setCostumer(Customer costumer) {
+    public void setCustomer(Customer costumer) {
         this.customer = costumer;
     }
 
@@ -123,6 +120,10 @@ public class Rental implements Model<Rental> {
         if(this.finished)
             this.finished = true;
     }
+    
+    public boolean isPaymentDone(){
+        return this.payments.size() > 0;
+    }
 
     public LocalDateTime getExpectedReturnDate() {
         return expectedReturnDate;
@@ -154,39 +155,67 @@ public class Rental implements Model<Rental> {
     }
     
     @Override
-    public void save() {
+    public void save() throws SQLException {
+        
+        Timestamp rentald = Timestamp.valueOf(this.rentalDate); 
+        Timestamp rentale = Timestamp.valueOf(this.expectedReturnDate);
+                
         String insert = String.format("insert into rental (movie_id, card_number, "
-                + "offer_code, rental_date, expected_date, return_date, finished) values"
-                + " ('%s', '%s', '%s', '%d')", 
-                this.movie.getId(), this.customer.getCardNumber(), this.getOfferCode(), this.getRentalDate().toString(), this.getExpectedReturnDate().toString(),
-                this.getReturnDate().toString(), 0);
-        try {
-            
+                + "offer_code, rental_date, expected_date, finished) values"
+                + " ('%d', '%s', '%s', '%s', '%s', '%d')", 
+                this.movie.getId(), this.customer.getCardNumber(), this.getOfferCode(), rentald, rentale.toString(),
+                0);
+        
+        System.out.println(insert);
+        
             DbConnection dbConnection = DbConnection.getDbConnection();
-            dbConnection.commit(insert);
-        } catch (SQLException ex) {
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            dbConnection.execute(insert);
+            
+            this.id = dbConnection.getLastId();
+            System.out.println(this.id);
+            
+            for(Payment payment : payments){
+                if(!payment.isDone()){
+                    payment.save();
+                    System.out.println("Feito");
+                }
+            }
+            movie.setAvailable(false);
+            movie.update();
     }
 
     @Override
-    public void update() {
-         String updateSql = String.format("update movie set title = '%s', description = '%s', "
-                + "thumbnail = '%s', available = '%d' where movie_id = '%d'", 
-                this);
-        try {
+    public void update() throws SQLException{
+        
+        int end = -1;
+        if(this.finished)
+            end = 1;
+        else
+            end = 0;
+                  
+        
+        this.movie.getId();
+        this.customer.getCardNumber();
+        Timestamp rentald = Timestamp.valueOf(this.rentalDate); 
+        Timestamp rentale = Timestamp.valueOf(this.expectedReturnDate);
+        Timestamp rentalr = this.returnDate != null ? Timestamp.valueOf(this.returnDate) : null;
+        
+        String updateSql;
+        updateSql = String.format("update rental set movie_id = '%d', card_number = '%s', "
+                + "offer_code = '%s', rental_date = '%s', expected_date = '%s', return_date = '%s', finished = '%d' where rental_id = '%d'", 
+                this.movie.getId(), this.customer.getCardNumber(), this.offerCode, rentald, rentale,
+                rentalr, end, this.id);
+                System.out.println(updateSql);
             DbConnection dbConnection = DbConnection.getDbConnection();
-            dbConnection.commit(updateSql);
-        } catch (SQLException ex) {
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            dbConnection.execute(updateSql);
     }
 
     @Override
     public Rental get(String property, String value) {
-        String query = String.format("select movie_id, title, description, thumbnail,"
-                + " available from movie where %s = '%s'", property, value);
-        Movie movie = null; 
+        String query = String.format("select rental_id, movie_id, card_number, "
+                + "offer_code, rental_date, expected_date, return_date, finished "
+                + "from rental where %s = '%s' and finished = 0", property, value);
+        Rental rental = null; 
         
         try {
             
@@ -194,27 +223,49 @@ public class Rental implements Model<Rental> {
             ResultSet rs = dbConnection.query(query);
            
             while (rs!=  null && rs.next()) {
-                String mId = String.valueOf( rs.getInt("movie_id"));
-                String mTitle = rs.getString("title");
-                String mDescription = rs.getString("description");
-                String mThumbnail = rs.getString("thumbnail");
-                Integer mAvailable = rs.getInt("available");
-                movie = new Movie(Integer.valueOf(mId), mTitle, mDescription, mThumbnail); 
-                movie.setAvailable(mAvailable == 1);
+                
+                int id = rs.getInt("rental_id"); 
+                int movie_id = rs.getInt("movie_id");
+                String card_number = rs.getString("card_number");
+                
+                String offerCode = rs.getString("offer_code");
+                
+                Timestamp r_date = rs.getTimestamp("rental_date");
+                Timestamp e_date = rs.getTimestamp("expected_date");
+                Timestamp re_date = rs.getTimestamp("return_date");     
+                
+                LocalDateTime rental_date = r_date.toLocalDateTime();
+                LocalDateTime expected_date = e_date.toLocalDateTime();
+                LocalDateTime return_date = (re_date != null) ? re_date.toLocalDateTime() : null;
+                 
+                int finished = rs.getInt("finished");
+                
+                Movie m = new Movie();
+                m = m.get("movie_id", String.valueOf(movie_id));
+                Payment p = new Payment(null, null);
+                List<Payment> payments = p.list("rental_id", String.valueOf(id));
+                
+                Customer customer = new Customer(card_number, "");
+                rental = new Rental(m, customer, offerCode, rental_date, expected_date);
+                rental.setReturnDate(return_date);
+                rental.id = id;
+                rental.finished = (finished == 1);
+                rental.payments = payments;
             }
             
         } catch (SQLException ex) {
             Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return null;
+        return rental;
     }
 
     @Override
     public List<Rental> list(String property, String value) {
-         String query = String.format("select movie_id, title, description, thumbnail,"
-                + " available from movie where %s = '%s'", property, value);
-        List<Movie> movies = new ArrayList<>(); 
+         String query = String.format("select rental_id, movie_id, card_number, "
+                + "offer_code, rental_date, expected_date, return_date, finished from rental where %s = '%s'", property, value);
+        Rental rental = null; 
+        List<Rental> rentals = new ArrayList<>();
         
         try {
             
@@ -222,21 +273,91 @@ public class Rental implements Model<Rental> {
             ResultSet rs = dbConnection.query(query);
            
             while (rs!=  null && rs.next()) {
-                String mId = String.valueOf( rs.getInt("movie_id"));
-                String mTitle = rs.getString("title");
-                String mDescription = rs.getString("description");
-                String mThumbnail = rs.getString("thumbnail");
-                Integer mAvailable = rs.getInt("available");
-                Movie movie = new Movie(Integer.valueOf(mId), mTitle, mDescription, mThumbnail); 
-                movie.setAvailable(mAvailable == 1);
-                movies.add(movie);
+                
+                int id = rs.getInt("rental_id"); 
+                int movie_id = rs.getInt("movie_id");
+                String card_number = rs.getString("card_number");
+                
+                String offerCode = rs.getString("offer_code");
+                
+                Timestamp r_date = rs.getTimestamp("rental_date");
+                Timestamp e_date = rs.getTimestamp("expected_date");
+                Timestamp re_date = rs.getTimestamp("return_date");     
+                
+                LocalDateTime rental_date = r_date.toLocalDateTime();
+                LocalDateTime expected_date = e_date.toLocalDateTime();
+                
+                 
+                int finished = rs.getInt("finished");
+                
+                Movie m = new Movie();
+                m = m.get("movie_id", String.valueOf(movie_id));
+                Payment p = new Payment(null, null);
+                List<Payment> payments = p.list("rental_id", String.valueOf(id));
+                
+                
+                Customer customer = new Customer();
+                customer = customer.get("card_number", card_number);
+                
+                rental = new Rental(m, customer, offerCode, rental_date, expected_date);
+                LocalDateTime return_date = null;
+                if(re_date != null) {
+                    return_date = re_date.toLocalDateTime(); 
+                }
+                rental.setReturnDate(return_date);
+                rental.finished = (finished == 1);
+                rental.payments = payments;
+                rentals.add(rental);
             }
             
         } catch (SQLException ex) {
             Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        return null;
+        return rentals;
+    }
+
+    public String[] finish() throws SQLException {
+        
+        LocalDateTime returnDate = LocalDateTime.now(); 
+        long days = expectedReturnDate.until( returnDate, ChronoUnit.DAYS );
+        String [] info = new String[3]; 
+        
+        if(days == 0){
+            this.returnDate = returnDate;
+            this.finished = true;
+            this.movie.setAvailable(true);
+            this.update();
+            this.movie.update();
+            info[0] = "You returned the movie in the correct time. ";
+            info[1] = "You don't neet to pay extra charges";
+            info[2] = "Thank you for chosse us.\nIf you want to rent another movie, just go to home page.";
+            return info;
+        } else if(days > 0 && days < 10){
+            BigDecimal fixedValue = new BigDecimal("1.50");
+            BigDecimal daysB = new BigDecimal(days);
+            BigDecimal newValue = fixedValue.multiply(daysB);
+            Payment payment = new Payment(this, newValue, BigDecimal.ZERO, newValue, returnDate);
+            this.returnDate = returnDate;
+            this.finished = true;
+            this.movie.setAvailable(true);
+            this.update();
+            this.movie.update();
+            info[0] = "Your late returning was " + days + "days";
+            info[1] = "You paid some extra charge in total of "+newValue.setScale(2).toString();
+            info[2] = "Thank you for chosse us. If you want to rent another movie do it in our home page.";
+            return info;
+        } else {
+            BigDecimal max = new BigDecimal("15.00");
+            Payment payment = new Payment(this, max, BigDecimal.ZERO, max, returnDate);
+            this.returnDate = returnDate;
+            this.finished = true;
+            this.update();
+            info[0] = "Your late returning was " + days + "days";
+            info[1] = "You paid the maximum extra charge in total of " + max.setScale(2).toString();
+            info[2] = "Now, the Movie disc is yours.\nThank you for chosse us.\nIf you want to rent another movie, just go to home page.";
+            return info;
+        }
     }
     
 }
