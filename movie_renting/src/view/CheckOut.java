@@ -1,35 +1,25 @@
 package view;
 
-
 import controller.Controller;
 import exception.CVVException;
 import exception.CardNumberException;
 import exception.QueryModelException;
 import exception.SaveModelException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
- *
+ * CheckOut GUI represents the final step of rental process where the customer enters with its card information to payment. 
  * @author 
  */
 public class CheckOut extends javax.swing.JFrame {
 
-    private Controller controller; 
+    private final Controller controller; 
     
     /**
-     * 
+     * Creates a CheckOut GUI using a controller object. 
+     * @param controller - the application controller object
      */
     public CheckOut(Controller controller) {
         this.controller = controller;
@@ -92,11 +82,6 @@ public class CheckOut extends javax.swing.JFrame {
 
         btnCancel.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
         btnCancel.setText("CANCEL");
-        btnCancel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnCancelMouseClicked(evt);
-            }
-        });
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
@@ -117,11 +102,6 @@ public class CheckOut extends javax.swing.JFrame {
 
         btnProceed.setFont(new java.awt.Font("Tahoma", 1, 15)); // NOI18N
         btnProceed.setText("PROCEED");
-        btnProceed.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnProceedMouseClicked(evt);
-            }
-        });
         btnProceed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnProceedActionPerformed(evt);
@@ -146,11 +126,6 @@ public class CheckOut extends javax.swing.JFrame {
 
         btnSeeBasket.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         btnSeeBasket.setText("SEE YOUR BASKET");
-        btnSeeBasket.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnSeeBasketMouseClicked(evt);
-            }
-        });
         btnSeeBasket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSeeBasketActionPerformed(evt);
@@ -279,68 +254,56 @@ public class CheckOut extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    /**
+     * Proceeds the payment process calling the Controller's checkOut function. 
+     * @param evt Action Event (press button)
+     */
     private void btnProceedActionPerformed(java.awt.event.ActionEvent evt) {                                           
        
+        // gets all text values
         String cardNumber = txtCardNo.getText().trim().replaceAll(" ", "");
         String cvv = txtCVV.getText().trim().replaceAll(" ", "");
-        String expiryDate = txtExpiry.getText().trim().replaceAll(" ", "");
         String email = txtEmail.getText().trim().replaceAll(" ", "");
         String offerCode = txtOfferCode.getText().trim().replaceAll(" ", "");
         
-        try 
-        {
-            this.controller.checkOut(cardNumber, cvv, email, offerCode);
-            String message = "Your payment was successful.\nEnjoye your movies.\nGet your discs.";
-            JOptionPane.showMessageDialog(null, message, "Payment Successful", JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
-            new Welcome(controller).setVisible(true);
-        } catch (SQLException | QueryModelException | SaveModelException |  CardNumberException | CVVException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Return Movie ERROR", JOptionPane.ERROR_MESSAGE);
-        } 
-    }                                          
+        //checks if some field is empty
+        if(cardNumber.length() > 0 && cvv.length() > 0 && email.length() > 0 && offerCode.length() > 0){
+            try 
+            {
+                this.controller.checkOut(cardNumber, cvv, email, offerCode);
+                String message = "Your payment was successful.\nEnjoye your movies.\nGet your discs.";
+                JOptionPane.showMessageDialog(null, message, "Payment Successful", JOptionPane.INFORMATION_MESSAGE);
+                //close this view and open the welcome view. 
+                this.dispose();
+                new Welcome(controller).setVisible(true);
+            } catch (SQLException | QueryModelException | SaveModelException |  CardNumberException | CVVException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Return Movie ERROR", JOptionPane.ERROR_MESSAGE);
+            } 
+        }else{
+            String message = "Check out: Some fields are empty. Check the fields.";
+            JOptionPane.showMessageDialog(null, message, "Some fields are empty", JOptionPane.ERROR_MESSAGE);
+            lblCheckout.setText(message);
+        }
+    }                                                                        
 
-    private void btnProceedMouseClicked(java.awt.event.MouseEvent evt) {                                        
-        // TODO add your handling code here:
-        
-    }                                       
-
+    /***
+     * Closes the form and opens Welcome (first screen) form. 
+     * @param evt Acition Event
+     */
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {                                          
-        // TODO add your handling code here:
         this.dispose();
         new Welcome(controller).setVisible(true);
-    }                                         
+    }                                                                            
 
-    private void btnCancelMouseClicked(java.awt.event.MouseEvent evt) {                                       
-        // TODO add your handling code here:
-        this.dispose();
-        new Welcome(controller).setVisible(true);
-    }                                      
-
-    private void btnSeeBasketMouseClicked(java.awt.event.MouseEvent evt) {                                          
-        // TODO add your handling code here:
-    }                                         
-
+    /***
+     * Comes back to ShoppingBasket form to see the movie Rental list. 
+     * @param evt ActionEvent (press button)
+     */
     private void btnSeeBasketActionPerformed(java.awt.event.ActionEvent evt) {                                             
         this.dispose();
         new ShoppingBasket(controller).show();
     }                                            
-
     
-    private static void info(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    private static void warning(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.WARNING_MESSAGE);
-    }
-    
-    private static void error(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.ERROR_MESSAGE);
-    }
-   
 
     // Variables declaration - do not modify                     
     private javax.swing.JButton btnCancel;

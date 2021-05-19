@@ -11,14 +11,16 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
+ * ShoppingBasket GUI represents the proposal movies that will be rented. 
  * @author carlos
  */
 public class ShoppingBasket extends javax.swing.JFrame {
 
-    private Controller controller; 
+    private final Controller controller; 
+    
     /**
-     * Creates new form ShoppingBasket
+     * Creates a new ShoppingBasket form centralized in the window with a Controller object.
+     * @param controller - the application controller object.
      */
     public ShoppingBasket(Controller controller) {
         this.controller = controller;
@@ -157,6 +159,11 @@ public class ShoppingBasket extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    /**
+     * Closes this window and opens the initial screen. 
+     * @param evt 
+     */
     private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
         // TODO add your handling code here:
         new Welcome(controller).showFrame();
@@ -165,9 +172,12 @@ public class ShoppingBasket extends javax.swing.JFrame {
 
     private void moviesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_moviesTableMouseClicked
         // TODO add your handling code here:
-       
     }//GEN-LAST:event_moviesTableMouseClicked
 
+    /***
+     * Opens the CheckOut screen and closes this window.
+     * @param evt press button
+     */
     private void btnCheckoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckoutActionPerformed
         // TODO add your handling code here:
         CheckOut checkout = new CheckOut(controller);
@@ -175,13 +185,19 @@ public class ShoppingBasket extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnCheckoutActionPerformed
 
+    /***
+     * Removes a movie from the basket movies list and updates the the basket list visualization. 
+     * @param evt press button
+     */
     private void btnRemoveMovieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveMovieActionPerformed
         // TODO add your handling code here:
         if(moviesTable.getRowCount() > 0){
+            
             DefaultTableModel model = (DefaultTableModel) moviesTable.getModel();
-            int row = moviesTable.getSelectedRow();
-            String id = model.getValueAt(row, 0).toString();
 
+            //gets the row movie id and removes it from basket list
+            int row = moviesTable.getSelectedRow(); 
+            String id = model.getValueAt(row, 0).toString();
             controller.removeMovie(Integer.valueOf(id));
 
             model.removeRow(row);
@@ -191,6 +207,10 @@ public class ShoppingBasket extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRemoveMovieActionPerformed
 
+    /**
+     * Closes this window and opens the Movie GUI list. 
+     * @param evt press button
+     */
     private void btnSeeMoviesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeeMoviesActionPerformed
         // TODO add your handling code here:
         Movie movie = new Movie(controller);
@@ -199,6 +219,9 @@ public class ShoppingBasket extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSeeMoviesActionPerformed
 
   
+    /***
+     * Inits the movie table with all movies in the customer's basket. 
+     */
     private void initSelectedMoviesList(){
         List<String[]> movies = controller.listCustomerMovies();
         DefaultTableModel tbModel = (DefaultTableModel) moviesTable.getModel(); 

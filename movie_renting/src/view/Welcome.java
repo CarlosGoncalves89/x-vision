@@ -3,7 +3,7 @@ package view;
 import controller.Controller;
 
 /**
- *
+ * Welcome GUI represents the initial screen where the customer chooses the first initial operations. 
  * @author 
  */
 public class Welcome extends javax.swing.JFrame {
@@ -11,8 +11,8 @@ public class Welcome extends javax.swing.JFrame {
     private final Controller controller; 
     
     /**
-     * Creates new form welcome
-     * @param controller
+     * Creates a new Welcome form centralized in the window with a Controller object.
+     * @param controller - the application controller object.
      */
     public Welcome(Controller controller) {
         this.controller = controller; 
@@ -214,12 +214,20 @@ public class Welcome extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Opens the Movie GUI window.
+     * @param evt press button
+     */
     private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
         // TODO add your handling code here:
         new Movie(controller).show();
         this.dispose();
     }//GEN-LAST:event_jPanel2MouseClicked
 
+    /**
+     * Opens the ReturnMovie GUI window. 
+     * @param evt press button
+     */
     private void jPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel3MouseClicked
         // TODO add your handling code here:
         this.dispose();
@@ -227,7 +235,7 @@ public class Welcome extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel3MouseClicked
 
     /**
-     *
+     * Shows the Welcome frame using a runnable object. 
      */
     public void showFrame(){
         Runnable runnable = () -> {

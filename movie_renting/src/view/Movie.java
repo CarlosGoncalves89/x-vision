@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 
 /**
- *
+ * Movie GUI represents the inital step to rent a movie that show a list of available movies to be rented. 
  * @author 
  */
 public class Movie extends javax.swing.JFrame {
@@ -20,13 +20,17 @@ public class Movie extends javax.swing.JFrame {
     private Controller controller; 
       
     /**
-     * Creates new form movies
+     * Creates a new Movie form centralized in the window.  
      */
     public Movie() {
         initComponents();  
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Creates a new Movie form centralized in the window with a Controller object.
+     * @param controller - the application controller object
+     */
     Movie(Controller controller) {
         this();
         this.controller = controller; 
@@ -160,42 +164,62 @@ public class Movie extends javax.swing.JFrame {
         pack();
     }// </editor-fold>                        
 
+    
+    /***
+     * Opens the initial screen and closes the Movie list screen
+     * @param evt 
+     */
     private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {                                    
-        // TODO add your handling code here:
         new Welcome(controller).showFrame();
         this.dispose();
     }                                   
                                                                   
 
+    /**
+     * Adds a new Movie rental to the current customer basket. 
+     * @param evt ActionEvent (press button)
+     */
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
         
         DefaultTableModel model = (DefaultTableModel) moviesTable.getModel();
-        int row = moviesTable.getSelectedRow();
         
+        //gets the row information
+        int row = moviesTable.getSelectedRow(); // get the select row
         String id = model.getValueAt(row, 0).toString();
-        String title = model.getValueAt(row, 1).toString();
-        String description = model.getValueAt(row, 2).toString();
         
         try {
+            //add a new movie in the customer's basket. 
             controller.addMovie(Integer.valueOf(id), "", "", "");
         } catch (InvalidNumberMoviesException | QueryModelException | CardNumberException | CVVException ex) {
            JOptionPane.showMessageDialog(null, ex.getMessage(), "Invalid Number of Movies Renting", JOptionPane.ERROR_MESSAGE);
         }
+        //updates the table visualization
         model.removeRow(row);
         model.fireTableDataChanged();
     }                                      
 
+    /**
+     * Shows the ShoppingBasket form with a list of movies select by the customer.
+     * @param evt press button
+     */
     private void btnBasketActionPerformed(java.awt.event.ActionEvent evt) {                                          
         ShoppingBasket basket = new ShoppingBasket(controller);
         basket.show();
         this.dispose();
     }                                         
 
+    /**
+     * Refresh all available movies. 
+     * @param evt press button
+     */
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {                                           
         initMoviesTable();
     }                                          
 
   
+    /**
+     * Inits the movie table using all available movies data in the machine. 
+     */
     private void initMoviesTable(){
         List<String[]> movies = controller.listMovies();
         DefaultTableModel tbModel = (DefaultTableModel) moviesTable.getModel(); 
@@ -204,42 +228,6 @@ public class Movie extends javax.swing.JFrame {
         }
         movies.forEach(tbModel::addRow);
         tbModel.fireTableDataChanged();
-    }
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Movie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Movie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Movie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Movie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-             //</editor-fold>
-   /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Movie().setVisible(true);
-            }
-        });
     }
 
     // Variables declaration - do not modify                     

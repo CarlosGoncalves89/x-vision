@@ -8,20 +8,24 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * ReturnMovie GUI represent the returning movie process where the customer brings back the movie disc to the machine to return.
  * @author 
  */
 public class ReturnMovie extends javax.swing.JFrame {
 
     private Controller controller; 
     /**
-     * Creates new form returnmovie
+     * Creates new ReturnMovie form centralized in the window.  
      */
     public ReturnMovie() {
         initComponents();
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Creates new ReturnMovie form centralized in the window with a Controller object.
+     * @param controller - the application controller object.
+     */
     ReturnMovie(Controller controller) {
         this();
         this.controller = controller; 
@@ -138,26 +142,34 @@ public class ReturnMovie extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtMovieIdActionPerformed
 
+    /**
+     * Cancels the retun processing and comes back to the initial screen.
+     * @param evt 
+     */
     private void btnCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelMouseClicked
-        // TODO add your handling code here:
         this.dispose();
         new Welcome(controller).setVisible(true);
     }//GEN-LAST:event_btnCancelMouseClicked
 
     private void btnProceedMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProceedMouseClicked
-        // TODO add your handling code here:
      
     }//GEN-LAST:event_btnProceedMouseClicked
 
+    /**
+     * Proceeds the returning process attending the business rules. 
+     * @param evt press button
+     */
     private void btnProceedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProceedActionPerformed
         
         String movieId = txtMovieId.getText().trim().replace(" ", "");
+        //checks if the movieId is not empty
         if(movieId.length() == 0){
              JOptionPane.showMessageDialog(null, "Please, enter with the Movie disc code", "Code number is empty", JOptionPane.WARNING_MESSAGE);
         } else {
             int id = Integer.valueOf(movieId);
             String [] info;
             try {
+                //returning movie (if throws any exception theirs will be catched)
                 info = this.controller.returnMovie(id);
                 String message = info[0] + "\n" + info[1] + "\n" + info[2];
                 JOptionPane.showMessageDialog(null,  message, "Return Movie disc was sucessful", JOptionPane.INFORMATION_MESSAGE);
@@ -167,57 +179,6 @@ public class ReturnMovie extends javax.swing.JFrame {
             } 
         }
     }//GEN-LAST:event_btnProceedActionPerformed
-
-    private static void info(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    private static void warning(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.WARNING_MESSAGE);
-    }
-    
-    private static void error(String infoMessage, String titleBar)
-    {
-        JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.ERROR_MESSAGE);
-    }
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ReturnMovie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ReturnMovie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ReturnMovie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ReturnMovie.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ReturnMovie().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
