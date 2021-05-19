@@ -34,6 +34,7 @@ public class CheckOut extends javax.swing.JFrame {
     public CheckOut(Controller controller) {
         this.controller = controller;
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -306,13 +307,13 @@ public class CheckOut extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
         this.dispose();
-        new Welcome(null).setVisible(true);
+        new Welcome(controller).setVisible(true);
     }                                         
 
     private void btnCancelMouseClicked(java.awt.event.MouseEvent evt) {                                       
         // TODO add your handling code here:
         this.dispose();
-        new Welcome(null).setVisible(true);
+        new Welcome(controller).setVisible(true);
     }                                      
 
     private void btnSeeBasketMouseClicked(java.awt.event.MouseEvent evt) {                                          

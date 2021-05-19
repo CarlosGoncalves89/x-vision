@@ -23,7 +23,8 @@ public class Movie extends javax.swing.JFrame {
      * Creates new form movies
      */
     public Movie() {
-        initComponents();      
+        initComponents();  
+        setLocationRelativeTo(null);
     }
 
     Movie(Controller controller) {

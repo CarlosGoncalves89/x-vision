@@ -23,6 +23,7 @@ public class ShoppingBasket extends javax.swing.JFrame {
     public ShoppingBasket(Controller controller) {
         this.controller = controller;
         initComponents();
+        setLocationRelativeTo(null);
         initSelectedMoviesList();
         
     }

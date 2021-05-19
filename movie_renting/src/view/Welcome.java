@@ -18,6 +18,7 @@ public class Welcome extends javax.swing.JFrame {
         this.controller = controller; 
         this.controller.createSession();
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**

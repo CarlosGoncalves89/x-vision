@@ -19,6 +19,7 @@ public class ReturnMovie extends javax.swing.JFrame {
      */
     public ReturnMovie() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     ReturnMovie(Controller controller) {
