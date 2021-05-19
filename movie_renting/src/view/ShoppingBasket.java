@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Carlos e Thiago
+ * @author carlos
  */
 public class ShoppingBasket extends javax.swing.JFrame {
 

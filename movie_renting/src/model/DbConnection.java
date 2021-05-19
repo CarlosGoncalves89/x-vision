@@ -16,13 +16,13 @@ import java.sql.Statement;
 /**
  * DbConnection represents a database class operation since create a JDBC connection to execute query and DML 
  * operations as insert, update. 
- * @author Thiago 
+ * @thiago 
  */
 public class DbConnection {
     
     private static final String DB_NAME = "xvision"; 
     private static final String USER = "root"; 
-    private static final String PWD = "";
+    private static final String PWD = "cfsa655269";
     
     private static DbConnection dbConnection;
     private Connection connection;

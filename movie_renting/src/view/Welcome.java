@@ -10,7 +10,7 @@ import controller.Controller;
 
 /**
  *
- * @author Thiago
+ * @author 
  */
 public class Welcome extends javax.swing.JFrame {
 
@@ -22,6 +22,7 @@ public class Welcome extends javax.swing.JFrame {
      */
     public Welcome(Controller controller) {
         this.controller = controller; 
+        this.controller.createSession();
         initComponents();
     }
 

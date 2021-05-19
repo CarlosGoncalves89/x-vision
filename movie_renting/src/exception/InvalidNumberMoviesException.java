@@ -2,7 +2,7 @@ package exception;
 
 /**
  * InvalidNumberMoviesException represents an exception of the number of movies allowed. 
- * @author Carlos
+ * @author carlos
  */
 public class InvalidNumberMoviesException extends Throwable {
 

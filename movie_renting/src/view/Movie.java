@@ -2,7 +2,10 @@ package view;
 
 
 import controller.Controller;
+import exception.CVVException;
+import exception.CardNumberException;
 import exception.InvalidNumberMoviesException;
+import exception.QueryModelException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +20,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Carlos
+ * @author 
  */
 public class Movie extends javax.swing.JFrame {
     
@@ -185,23 +188,10 @@ public class Movie extends javax.swing.JFrame {
     }                                       
 
     private void moviesTableMouseClicked(java.awt.event.MouseEvent evt) {                                         
-        // TODO add your handling code here:
-        /*JTable source = (JTable)evt.getSource();
-        int row = source.rowAtPoint( evt.getPoint() );
-        DefaultTableModel model = (DefaultTableModel) source.getModel();
-        
-        String id = model.getValueAt(row, 0).toString();
-        String title = model.getValueAt(row, 1).toString();
-        String description = model.getValueAt(row, 2).toString();
-        
-        String [] movie = {id, title, description};
-        CheckOut checkout = new CheckOut(controller, movie);
-        checkout.show();
-        this.dispose();*/
+      
     }                                        
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
-        // TODO add your handling code here:
         
         DefaultTableModel model = (DefaultTableModel) moviesTable.getModel();
         int row = moviesTable.getSelectedRow();
@@ -212,24 +202,20 @@ public class Movie extends javax.swing.JFrame {
         
         try {
             controller.addMovie(Integer.valueOf(id), "", "", "");
-        } catch (InvalidNumberMoviesException ex) {
+        } catch (InvalidNumberMoviesException | QueryModelException | CardNumberException | CVVException ex) {
            JOptionPane.showMessageDialog(null, ex.getMessage(), "Invalid Number of Movies Renting", JOptionPane.ERROR_MESSAGE);
         }
-        
         model.removeRow(row);
         model.fireTableDataChanged();
-        
     }                                      
 
     private void btnBasketActionPerformed(java.awt.event.ActionEvent evt) {                                          
-        // TODO add your handling code here:
         ShoppingBasket basket = new ShoppingBasket(controller);
         basket.show();
         this.dispose();
     }                                         
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        // TODO add your handling code here:
         initMoviesTable();
     }                                          
 

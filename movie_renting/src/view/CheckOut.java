@@ -2,6 +2,10 @@ package view;
 
 
 import controller.Controller;
+import exception.CVVException;
+import exception.CardNumberException;
+import exception.QueryModelException;
+import exception.SaveModelException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -18,7 +22,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Carlos
+ * @author 
  */
 public class CheckOut extends javax.swing.JFrame {
 
@@ -282,16 +286,16 @@ public class CheckOut extends javax.swing.JFrame {
         String email = txtEmail.getText().trim().replaceAll(" ", "");
         String offerCode = txtOfferCode.getText().trim().replaceAll(" ", "");
         
-        try {
+        try 
+        {
             this.controller.checkOut(cardNumber, cvv, email, offerCode);
-        } catch (SQLException ex) {
-            Logger.getLogger(CheckOut.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        String message = "Your payment was successful.\nEnjoye your movies.\nGet your discs.";
-        JOptionPane.showMessageDialog(null, message, "Payment Successful", JOptionPane.INFORMATION_MESSAGE);
-        this.dispose();
-        new Welcome(controller).setVisible(true);
-        
+            String message = "Your payment was successful.\nEnjoye your movies.\nGet your discs.";
+            JOptionPane.showMessageDialog(null, message, "Payment Successful", JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+            new Welcome(controller).setVisible(true);
+        } catch (SQLException | QueryModelException | SaveModelException |  CardNumberException | CVVException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Return Movie ERROR", JOptionPane.ERROR_MESSAGE);
+        } 
     }                                          
 
     private void btnProceedMouseClicked(java.awt.event.MouseEvent evt) {                                        

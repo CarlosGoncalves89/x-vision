@@ -2,6 +2,8 @@ package view;
 
 
 import controller.Controller;
+import exception.QueryModelException;
+import exception.UpdateModelException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -167,11 +169,10 @@ public class ReturnMovie extends javax.swing.JFrame {
                 info = this.controller.returnMovie(id);
                 String message = info[0] + "\n" + info[1] + "\n" + info[2];
                 JOptionPane.showMessageDialog(null,  message, "Return Movie disc was sucessful", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Can't return the Movie Disc, now. It could be a problem with our connection to the serve. Please, try later or in another available machine", 
-                        "Returning movie disc ERROR", JOptionPane.ERROR_MESSAGE);
-            }
+            } catch (SQLException | QueryModelException | UpdateModelException ex) {
+                
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Return Movie ERROR", JOptionPane.ERROR_MESSAGE);
+            } 
         }
     }//GEN-LAST:event_btnProceedActionPerformed
 

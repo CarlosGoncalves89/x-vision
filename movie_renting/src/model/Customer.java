@@ -1,19 +1,25 @@
 package model;
 
+import exception.CVVException;
+import exception.CardNumberException;
+import exception.QueryModelException;
+import exception.SaveModelException;
+import exception.UpdateModelException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import validator.CVVValidator;
+import validator.CardNumberValidator;
 
 /**
  * Customer represents a person who rents a movie in X-vision machine. 
  * 
- * @author Thiago
+ * @thiago
  */
 public class Customer implements Model<Customer>{
     
@@ -30,6 +36,7 @@ public class Customer implements Model<Customer>{
     public Customer(){
         this.rentals = new ArrayList<>();
         this.firstRental = 1;
+        this.email = "";
     }
     
     /**
@@ -38,12 +45,10 @@ public class Customer implements Model<Customer>{
      * @param cardNumber credit card number
      * @param cvv card verification value
     */
-    public Customer(String cardNumber, String cvv){
+    public Customer(String cardNumber, String cvv) throws CardNumberException, CVVException{
         this();
-        setCardNumber(cardNumber);
-        setCVV(cvv);
-        this.firstRental = 1;
-        this.email = "";
+        this.cardNumber = cardNumber;
+        this.cvv = cvv;
     }
 
     /**
@@ -55,7 +60,7 @@ public class Customer implements Model<Customer>{
      * @param cvv - card verification value
      * @param firstRental - if this is the first customer rental
      */
-    public Customer(String cardNumber, String cvv, int firstRental) {
+    public Customer(String cardNumber, String cvv, int firstRental) throws CardNumberException, CVVException {
         this(cardNumber, cvv);
         this.firstRental = firstRental;
     }
@@ -69,7 +74,7 @@ public class Customer implements Model<Customer>{
      * @param email - the costumer's email address (used to receive the receipt and/or news)
      * @param firstRental - if this is the first customer rental
      */
-    public Customer(String cardNumber, String cvv, String email, int firstRental) {
+    public Customer(String cardNumber, String cvv, String email, int firstRental) throws CardNumberException, CVVException {
         this(cardNumber, cvv, firstRental);
         setEmail(email);
     }
@@ -78,10 +83,11 @@ public class Customer implements Model<Customer>{
     /**
      * Sets a new card number value if the cardNumber has length between 12 and 16 digits.
      * @param cardNumber - a credit (or debit) card number 
+     * @throws exception.CardNumberException 
      */
-    public void setCardNumber(String cardNumber){       
-        cardNumber = cardNumber.trim();
-        if(cardNumber.length() >= 12 && cardNumber.length() <= 16)
+    public void setCardNumber(String cardNumber) throws CardNumberException{       
+        System.out.println("cardNumber" + cardNumber);
+        if(cardNumber.equals("") || CardNumberValidator.validate(cardNumber))
             this.cardNumber = cardNumber;
     }
     
@@ -97,10 +103,11 @@ public class Customer implements Model<Customer>{
      * Sets a new card verification value to a Customer's card if cvv has length equals 3.  
      * @param cvv - card verification value
      */
-    public void setCVV(String cvv){
-        cvv = cvv.trim();
-        if(cvv.length() == 3)
+    public void setCVV(String cvv) throws CVVException{
+        if(cvv.equals("") || CVVValidator.validate(cvv))
             this.cvv = cvv;
+        else
+            throw new CVVException("The Card Verification Value contains alpha-numeric values or size different of 3 or 4 digits.");
     }
     
     /***
@@ -140,32 +147,49 @@ public class Customer implements Model<Customer>{
             this.firstRental = 0;
     }
     
+    public void addRentals(List<Rental> rentals){
+        this.rentals = rentals;
+    }
+    
+    public List<Rental> getRentals(){
+        return this.rentals;
+    }
     /**
-     * Rents a movie from a rentalDate until a expected return date.The customer
+     * Creates a rental of a movie from a rentalDate until a expected return date.The customer
  can use offer codes to get discounts in the total movie rental value. 
      * @param movie the movie rented
      * @param rentalDate the current date
      * @param expectedReturnDate the rental date plus a number of days 
      */
-    public void rent(Movie movie, LocalDateTime rentalDate, LocalDateTime expectedReturnDate){
+    public void createRental(Movie movie, LocalDateTime rentalDate, LocalDateTime expectedReturnDate){
         Rental rental = new Rental(movie, this, "", rentalDate, expectedReturnDate); 
         movie.setAvailable(false);
         rentals.add(rental);
     }
     
-    public void checkOut(String offerCode) throws SQLException{
-       
+    /**
+     * Checkouts the movies and applies if this rental the offer code
+     * @param offerCode
+     * @throws SQLException
+     * @throws SaveModelException 
+     */
+    public void checkOut(String offerCode) throws SQLException, SaveModelException{
         for(Rental rental: rentals){
             if(!rental.isFinished() && !rental.isPaymentDone()){
                 rental.doFirstPayment(offerCode);
                 rental.getMovie().setAvailable(false);
-                
             }
         }
         if(isFirstRental()){   
+            System.out.println("first rental");
+            this.firstRental = 0;
             this.save();
         }else{
+            System.out.println("second rental");
+            this.firstRental = 0;
+            System.out.println("siz: "+rentals.size());
             for(Rental rental : rentals){
+                rental.setCustomer(this);
                 rental.save();
             }
         }
@@ -189,7 +213,7 @@ public class Customer implements Model<Customer>{
      * Returns a list of the Customer's open rentals. 
      *  @return a list of rental that does not have the payment made.  
      */
-    public List<Movie> listOpenRentalMovies(){
+    public List<Movie> listSessionMovies(){
         List<Movie> movies = new ArrayList<>();
         for(Rental rental : rentals){
             if(!rental.isFinished() && !rental.isPaymentDone()){
@@ -229,23 +253,31 @@ public class Customer implements Model<Customer>{
      *
      */
     @Override
-    public void save() {
-        String insert = String.format("insert into customer (card_number, cvv, "
-                + "email, first_rental) values ('%s', '%s', '%s', '%d')", 
-                this.cardNumber, this.cvv, this.email, this.firstRental);
-        DbConnection dbConnection = null;
-        System.out.println(insert);
+    public void save() throws SaveModelException{
+        
         try {
+            
+            if(this.cardNumber == null || !CardNumberValidator.validate(this.cardNumber))
+                throw new SaveModelException("The card number can't be null. Check the value.");
+            else if(this.cvv == null ||  !CVVValidator.validate(cvv))
+                throw new SaveModelException("The card verification value can't be null. Check your cvv.");
+            
+            String insert = String.format("insert into customer (card_number, cvv, "
+                    + "email, first_rental) values ('%s', '%s', '%s', '%d')",
+                    this.cardNumber, this.cvv, this.email, this.firstRental);
+            DbConnection dbConnection = null;
             dbConnection = DbConnection.getDbConnection();
-                dbConnection.execute(insert);
-                for(Rental rental : rentals){
-                    if(!rental.isFinished()){
-                        rental.save();
-                    }
+            dbConnection.execute(insert);
+            for(Rental rental : rentals){
+                if(!rental.isFinished()){
+                    rental.save();
                 }
+            }
+        } catch (CardNumberException ex) {
+            throw new SaveModelException(ex.getMessage());
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
+            String message = "Persistent problem happened while Customer were saving. Check the main causes: " + ex.getMessage();
+            throw new SaveModelException(message);
         }
     }
 
@@ -254,29 +286,35 @@ public class Customer implements Model<Customer>{
      * 
      */
     @Override
-    public void update() {
-         String updateSql = String.format("update customer set cvv = '%s', email = '%s', "
+    public void update() throws UpdateModelException {
+        
+        try {
+            if(this.cardNumber == null || !CardNumberValidator.validate(this.cardNumber))
+                throw new UpdateModelException("The card number can't be null. Check the value.");
+            else if(this.cvv == null ||  CVVValidator.validate(cvv))
+                throw new UpdateModelException("The card verification value can't be null. Check your cvv.");
+            
+            String updateSql = String.format("update customer set cvv = '%s', email = '%s', "
                 + "first_rental = '%d' where card_number = '%s'", 
                 this.cvv, this.email, this.firstRental, this.cardNumber);
-        DbConnection dbConnection = null;
-        try {
-            dbConnection = DbConnection.getDbConnection();
-                dbConnection.execute(updateSql);
-                for(Rental rental : rentals){
-                    if(!rental.isFinished()){
-                        rental.update();
-                    }
+            
+            DbConnection dbConnection = null;
+            dbConnection.execute(updateSql);
+            for(Rental rental : rentals){
+                if(!rental.isFinished()){
+                    rental.update();
                 }
+            }
+            
+        } catch (CardNumberException ex) {
+             throw new UpdateModelException(ex.getMessage());
         } catch (SQLException ex) {
-             try {
-                 dbConnection.rollback();
-             } catch (SQLException ex1) {
-                 Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex1);
-             } catch (NullPointerException ex1){
-                 Logger.getLogger(Customer.class.getName()).log(Level.SEVERE, null, ex1);
-             }
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
+            String message = "Persistent problem happened while Customer were updating. Check the main causes: " + ex.getMessage();
+            throw new UpdateModelException(message);
         }
+        
+        
+       
     }
 
     /**
@@ -286,7 +324,7 @@ public class Customer implements Model<Customer>{
      * @return a Customer object with its rentals and associated payments. 
      */
     @Override
-    public Customer get(String property, String value) {
+    public Customer get(String property, String value) throws QueryModelException {
         
         String query = String.format("select card_number, cvv, email, first_rental from customer"
                 + " where %s = '%s'", property, value);
@@ -305,11 +343,11 @@ public class Customer implements Model<Customer>{
                 customer = new Customer(ccardNumber, ccvv, cemail, cfirstRental);
                 Rental rental = new Rental();
                 rental.setCustomer(customer);
-                customer.rentals = rental.list("card_number", ccardNumber);
             }
             
-        } catch (SQLException ex) {
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | CardNumberException | CVVException ex) {
+            String message = "Select problem happened while we were getting a customer. Check the main causes: " + ex.getMessage();
+            throw new QueryModelException(message);
         }
         
         return customer;
@@ -322,7 +360,7 @@ public class Customer implements Model<Customer>{
      * @return a Customer object with its rentals and associated payments. 
      */
     @Override
-    public List<Customer> list(String property, String value) {
+    public List<Customer> list(String property, String value) throws QueryModelException {
          String query = String.format("select card_number, cvv, email, first_rental from"
                  + " customer where %s = '%s'", property, value);
         
@@ -345,8 +383,9 @@ public class Customer implements Model<Customer>{
                 customers.add(customer);
             }
             
-        } catch (SQLException ex) {
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | CardNumberException | CVVException ex) {
+            String message = "Select problem happened while we were getting a customer. Check the main causes: " + ex.getMessage();
+            throw new QueryModelException(message);
         }
         
         return customers;
@@ -394,6 +433,5 @@ public class Customer implements Model<Customer>{
     public String toString() {
         return "Customer{" + "cardNumber=" + getCardNumber() + ", cvv=" + cvv + ","
                 + " email=" + getEmail() + ", firstRental=" + isFirstRental() + '}';
-    }
-    
+    } 
 }

@@ -5,6 +5,11 @@
  */
 package model;
 
+import exception.CVVException;
+import exception.CardNumberException;
+import exception.QueryModelException;
+import exception.SaveModelException;
+import exception.UpdateModelException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
@@ -18,7 +23,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Carlos 
+ * @carlos 
  */
 public class Rental implements Model<Rental> {
     
@@ -204,6 +209,7 @@ public class Rental implements Model<Rental> {
     
     /**
      * Does the first payment to rent a movie. 
+     * @param offerCode
      */
     public void doFirstPayment(String offerCode){
         
@@ -235,33 +241,42 @@ public class Rental implements Model<Rental> {
      * @throws SQLException 
      */
     @Override
-    public void save() throws SQLException {
+    public void save() throws SaveModelException {
+        
+        if(this.movie == null || this.movie.getId() == 0)
+            throw new SaveModelException("Rental's movie can't be null or movie code can't be zero. Check your movie list");
+        if(this.customer == null)
+            throw new SaveModelException("Rental's customer can't be null. Check your card number"); 
+        if(this.rentalDate == null ||  this.rentalDate.isAfter(expectedReturnDate))
+            throw new SaveModelException("Rental's date can't be null or after the expected return date. Maybe your machine clock is not working correctly."); 
+        if(this.expectedReturnDate == null)
+            throw new SaveModelException("Rental's expected date can't be null. Creating rental had a problem."); 
         
         Timestamp rentald = Timestamp.valueOf(this.rentalDate); 
         Timestamp rentale = Timestamp.valueOf(this.expectedReturnDate);
-                
-        String insert = String.format("insert into rental (movie_id, card_number, "
+        
+        try {
+             String insert = String.format("insert into rental (movie_id, card_number, "
                 + "offer_code, rental_date, expected_date, finished) values"
                 + " ('%d', '%s', '%s', '%s', '%s', '%d')", 
                 this.movie.getId(), this.customer.getCardNumber(), this.getOfferCode(), rentald, rentale.toString(),
                 0);
-        
-        System.out.println(insert);
-        
+             System.out.println(insert);
+             
             DbConnection dbConnection = DbConnection.getDbConnection();
             dbConnection.execute(insert);
             
             this.id = dbConnection.getLastId();
-            System.out.println(this.id);
-            
             for(Payment payment : payments){
                 if(!payment.isDone()){
                     payment.save();
-                    System.out.println("Feito");
                 }
             }
             movie.setAvailable(false);
             movie.update();
+        } catch (SQLException ex) {
+            throw new SaveModelException("Persistent problem happened while Customer were saving. Check the main causes:" +ex.getMessage()); 
+        }
     }
 
     /**
@@ -269,29 +284,40 @@ public class Rental implements Model<Rental> {
      * @throws SQLException 
      */
     @Override
-    public void update() throws SQLException{
+    public void update() throws UpdateModelException{
         
-        int end = -1;
-        if(this.finished)
-            end = 1;
-        else
-            end = 0;
-                  
+         if(this.movie == null || this.movie.getId() == 0)
+            throw new UpdateModelException("Rental's movie can't be null or movie code can't be zero. Check your movie list");
+        if(this.customer == null)
+            throw new UpdateModelException("Rental's customer can't be null. Check your card number"); 
+        if(this.rentalDate == null ||  this.rentalDate.isAfter(expectedReturnDate))
+            throw new UpdateModelException("Rental's date can't be null or after the expected return date. Maybe your machine clock is not working correctly."); 
+        if(this.expectedReturnDate == null)
+            throw new UpdateModelException("Rental's expected date can't be null. Creating rental had a problem."); 
+        if(returnDate == null)
+            throw new UpdateModelException("Rental's return date can't be null in update operation."); 
         
-        this.movie.getId();
-        this.customer.getCardNumber();
+        int end = this.finished ? 1 : 0; 
+        
         Timestamp rentald = Timestamp.valueOf(this.rentalDate); 
         Timestamp rentale = Timestamp.valueOf(this.expectedReturnDate);
-        Timestamp rentalr = this.returnDate != null ? Timestamp.valueOf(this.returnDate) : null;
+        Timestamp rentalr = Timestamp.valueOf(this.returnDate);
         
-        String updateSql;
-        updateSql = String.format("update rental set movie_id = '%d', card_number = '%s', "
+        try {
+            String updateSql;
+            updateSql = String.format("update rental set movie_id = '%d', card_number = '%s', "
                 + "offer_code = '%s', rental_date = '%s', expected_date = '%s', return_date = '%s', finished = '%d' where rental_id = '%d'", 
                 this.movie.getId(), this.customer.getCardNumber(), this.offerCode, rentald, rentale,
                 rentalr, end, this.id);
-                System.out.println(updateSql);
-            DbConnection dbConnection = DbConnection.getDbConnection();
-            dbConnection.execute(updateSql);
+            
+            DbConnection dbConnection;
+            dbConnection = DbConnection.getDbConnection();
+            int execute = dbConnection.execute(updateSql);
+                    
+        } catch (SQLException ex) {
+            throw new UpdateModelException("Persistent problem happened while Rental were saving. Check the main causes:" +ex.getMessage()); 
+        }
+            
     }
 
     /***
@@ -301,14 +327,16 @@ public class Rental implements Model<Rental> {
      * @return a Movie object with its rentals and associated payments. 
      */
     @Override
-    public Rental get(String property, String value) {
+    public Rental get(String property, String value) throws QueryModelException
+    {
+        
         String query = String.format("select rental_id, movie_id, card_number, "
                 + "offer_code, rental_date, expected_date, return_date, finished "
                 + "from rental where %s = '%s' and finished = 0", property, value);
+        
         Rental rental = null; 
         
         try {
-            
             DbConnection dbConnection = DbConnection.getDbConnection();
             ResultSet rs = dbConnection.query(query);
            
@@ -343,10 +371,9 @@ public class Rental implements Model<Rental> {
                 rental.payments = payments;
             }
             
-        } catch (SQLException ex) {
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        } catch (SQLException | CardNumberException | CVVException ex) {
+            throw new QueryModelException("Select problem happened while we were getting a customer. Check the main causes:" +ex.getMessage()); 
+        } 
         return rental;
     }
 
@@ -357,75 +384,75 @@ public class Rental implements Model<Rental> {
      * @return a Customer object with its rentals and associated payments. 
      */
     @Override
-    public List<Rental> list(String property, String value) {
-         String query = String.format("select rental_id, movie_id, card_number, "
+    public List<Rental> list(String property, String value) throws QueryModelException {
+        
+        String query = String.format("select rental_id, movie_id, card_number, "
                 + "offer_code, rental_date, expected_date, return_date, finished from rental where %s = '%s'", property, value);
+        
         Rental rental = null; 
         List<Rental> rentals = new ArrayList<>();
         
-        try {
-            
+        
+        try{
             DbConnection dbConnection = DbConnection.getDbConnection();
             ResultSet rs = dbConnection.query(query);
-           
             while (rs!=  null && rs.next()) {
-                
-                int id = rs.getInt("rental_id"); 
+
+                int id = rs.getInt("rental_id");
                 int movie_id = rs.getInt("movie_id");
                 String card_number = rs.getString("card_number");
-                
+
                 String offerCode = rs.getString("offer_code");
-                
-                Timestamp r_date = rs.getTimestamp("rental_date");
+
+                Timestamp r_date = rs.getTimestamp("rental_date"); 
                 Timestamp e_date = rs.getTimestamp("expected_date");
-                Timestamp re_date = rs.getTimestamp("return_date");     
-                
+                Timestamp re_date = rs.getTimestamp("return_date");
+
                 LocalDateTime rental_date = r_date.toLocalDateTime();
                 LocalDateTime expected_date = e_date.toLocalDateTime();
-                
-                 
+
+
                 int finished = rs.getInt("finished");
-                
+
                 Movie m = new Movie();
                 m = m.get("movie_id", String.valueOf(movie_id));
                 Payment p = new Payment(null, null);
                 List<Payment> payments = p.list("rental_id", String.valueOf(id));
-                
-                
+
+
                 Customer customer = new Customer();
                 customer = customer.get("card_number", card_number);
-                
+
                 rental = new Rental(m, customer, offerCode, rental_date, expected_date);
                 LocalDateTime return_date = null;
                 if(re_date != null) {
-                    return_date = re_date.toLocalDateTime(); 
+                    return_date = re_date.toLocalDateTime();
                 }
                 rental.setReturnDate(return_date);
                 rental.finished = (finished == 1);
                 rental.payments = payments;
                 rentals.add(rental);
             }
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
+        }catch(SQLException ex){
+            throw new QueryModelException("Select problem happened while we were getting a customer. Check the main causes:" +ex.getMessage()); 
         }
         
         return rentals;
     }
 
     /**
-     * Returns the information about the returning movie action. 
-     * This method finishes the rental and process any needed charges payments. 
+     * Returns the information about the returning movie action.This method finishes the rental and process any needed charges payments. 
      * @return information about the returning process.
      * @throws SQLException 
+     * @throws exception.UpdateModelException 
      */
-    public String[] finish() throws SQLException {
+    public String[] finish() throws SQLException, UpdateModelException {
         
         LocalDateTime returnDate = LocalDateTime.now(); 
         long days = expectedReturnDate.until( returnDate, ChronoUnit.DAYS );
         String [] info = new String[3]; 
         
-        if(days == 0){
+        if(days == 0 || days == -1){
             this.returnDate = returnDate;
             this.finished = true;
             this.movie.setAvailable(true);
