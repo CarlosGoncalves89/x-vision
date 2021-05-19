@@ -1,0 +1,39 @@
+21c4976 - thiagocruzfurtado, 14 minutes ago : Exception package documentation.
+fd287c6 - thiagocruzfurtado, 29 minutes ago : Fixed the bug: User session chart and returning movie. Changed the firstRental code business rules, as costumer methods erros in persistent rules. Fixed stack overflow problem while was getting a customer and its rentals. Changed interface Model to throw the Save, Update and Query Model's exceptions.
+a577591 - thiagocruzfurtado, 42 minutes ago : Created validator package that contains card number validator, cvv, e-mail valitor and a new interface validator.
+2c69840 - thiagocruzfurtado, 2 hours ago : Documentation
+535540c - thiagocruzfurtado, 3 days ago : Writing the documentation
+b793d50 - thiagocruzfurtado, 3 days ago : Model's documentation
+ca26104 - thiagocruzfurtado, 3 days ago : Added thre ReturnMovie view. In the form, the user enter with Movie dvd code and after it, we'll find the rental associated with them and returned, calculate (if needed) the extra charges.
+de74a34 - thiagocruzfurtado, 3 days ago : Added the new Welcome frame and connected them with XVisionApplication
+732487d - thiagocruzfurtado, 3 days ago : Customer methods to return and checkout payment. Updated Model's methods in Customer, Rental and payment. Removed the beginTransaction and commit from Costumer.
+d7cf63b - thiagocruzfurtado, 3 days ago : Controllers full version: thiagojcf@live.com
+7bf7ff6 - CarlosGoncalves89, 3 days ago : Controller add and remove movies from customer.
+8eab015 - CarlosGoncalves89, 3 days ago : Movie list, Checkout and new View ShoppingBasket
+456daa6 - CarlosGoncalves89, 4 days ago : view.Movie loading information from Controller request. The view is displaying the movie list.
+2e37dde - carlos, 5 days ago : CheckOut form created
+0613612 - carlos, 5 days ago : Model Movie class and Movie Form
+880b63c - carlos, 7 days ago : Merge branch 'main' of https://github.com/CarlosGoncalves89/x-vision into main
+1f5643f - thiagocruzfurtado, 7 days ago : Creating Controller's rentMovies and getExpectedReturnDate methods.
+458594f - thiagocruzfurtado, 7 days ago : Merging
+2ba0167 - thiagocruzfurtado, 7 days ago : Creating Costumer and DbConnection classes. Costumer declared attributes, constructors and getters and setters methods
+6d92468 - carlos, 7 days ago : Update Model interface
+df3b76b - carlos, 9 days ago : Merge branch 'main' of https://github.com/CarlosGoncalves89/x-vision into main
+7f5b188 - thiagocruzfurtado, 8 days ago : Creating and modifying DbConnection class.
+ec6c856 - thiagocruzfurtado, 9 days ago : Merge origin/main into main
+42bde11 - thiagocruzfurtado, 8 days ago : Creating Customer class. Represents data collection for movie rental approval.
+d499349 - thiagocruzfurtado, 9 days ago : Creating Payment class (implemented Model interface - CRUD). Represents the customer payments.
+00d8998 - carlos, 9 days ago : rental class
+a655a04 - carlos, 9 days ago : Movie class update
+f56e4ab - thiagocruzfurtado, 11 days ago : Merge origin/main into main
+51ae456 - carlos, 11 days ago : Merge branch 'main' of https://github.com/CarlosGoncalves89/x-vision into main
+3e9ea27 - thiagocruzfurtado, 11 days ago : Creating Costumer class and changed the DbConnection class.
+4b18d5d - thiagocruzfurtado, 11 days ago : Creating Controller class, specifying the basic methods: listMovies, rent and checkout movie, createPayment. Defined two attributes: dbConnection (to create  a connection to database)
+af154f3 - thiagocruzfurtado, 13 days ago : XvisionApplication first version, trying to connect Db but still with problem with access privileges Added Controller's connection property and query method
+f8ea3d7 - carlos, 11 days ago : Model Interface
+ac655d6 - carlos, 2 weeks ago : Controller
+59b4d48 - carlos, 2 weeks ago : in this stage the owner created the class
+abdb9a2 - carlos, 2 weeks ago : new clientes
+df2a649 - carlos, 2 weeks ago : Rent
+dd424ae - carlos, 2 weeks ago : Movie's model class
+b3a1515 - carlos, 2 weeks ago : Initial commit
