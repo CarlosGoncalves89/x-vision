@@ -23,11 +23,24 @@ public class Payment implements Model<Payment> {
     private LocalDateTime paymentDate; 
     private boolean done; 
     
+    /**
+     * Constructs a simple payment with associated rental and total receipt. 
+     * @param rental the associated rental
+     * @param total rental's total value
+     */
     public Payment(Rental rental, BigDecimal total){
         this.rental = rental; 
         this.total = total;
     }
 
+    /***
+     * Constructs a complete payment that includes the associate rental, subtotal, discount, total and payment date and time. 
+     * @param rental - associated rental
+     * @param subtotal - total value without discounts
+     * @param discount - discounts received from offer codes
+     * @param total - total = subtotal - discount
+     * @param paymentDate - the current date time value. 
+     */
     public Payment(Rental rental, BigDecimal subtotal, BigDecimal discount, BigDecimal total, LocalDateTime paymentDate) {
         this.rental = rental;
         this.subtotal = subtotal;
@@ -36,27 +49,49 @@ public class Payment implements Model<Payment> {
         this.paymentDate = paymentDate;
     }
 
-    
+    /**
+     * 
+     * @return 
+     */
     public Rental getRental() {
         return rental;
     }
 
+    /**
+     * 
+     * @param rental 
+     */
     public void setRental(Rental rental) {
         this.rental = rental;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public BigDecimal getTotal() {
         return total;
     }
 
+    /**
+     * 
+     * @param total 
+     */
     public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public boolean isDone(){
         return this.done; 
     }
     
+    /**
+     * 
+     */
     @Override
     public void save() {
         

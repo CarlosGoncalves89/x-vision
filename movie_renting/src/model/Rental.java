@@ -37,6 +37,14 @@ public class Rental implements Model<Rental> {
     private Boolean finished;
     private List<Payment> payments; 
 
+    /**
+     * 
+     * @param movie
+     * @param costumer
+     * @param offerCode
+     * @param rentalDate
+     * @param expectedReturnDate 
+     */
     public Rental(Movie movie, Customer costumer, String offerCode, LocalDateTime rentalDate, LocalDateTime expectedReturnDate) {
         this.movie = movie;
         this.customer = costumer;
@@ -243,6 +251,7 @@ public class Rental implements Model<Rental> {
     @Override
     public void save() throws SaveModelException {
         
+        //Checks if attributes is not null and has the correct values. 
         if(this.movie == null || this.movie.getId() == 0)
             throw new SaveModelException("Rental's movie can't be null or movie code can't be zero. Check your movie list");
         if(this.customer == null)
@@ -286,6 +295,7 @@ public class Rental implements Model<Rental> {
     @Override
     public void update() throws UpdateModelException{
         
+        //Checks if attributes is not null and has the correct values. 
          if(this.movie == null || this.movie.getId() == 0)
             throw new UpdateModelException("Rental's movie can't be null or movie code can't be zero. Check your movie list");
         if(this.customer == null)

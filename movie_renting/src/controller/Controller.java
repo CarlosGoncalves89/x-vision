@@ -101,6 +101,10 @@ public final class Controller {
     }
     
     
+    /**
+     * 
+     * @return 
+     */
     public List<String[]> listCustomerMovies(){
         List<Movie> movies = customer.listSessionMovies();
         List<String[]> moviesString = new ArrayList<>();

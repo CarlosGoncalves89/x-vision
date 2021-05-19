@@ -7,16 +7,9 @@ import exception.CardNumberException;
 import exception.InvalidNumberMoviesException;
 import exception.QueryModelException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
@@ -77,20 +70,10 @@ public class Movie extends javax.swing.JFrame {
                 "MOVIE ID", "TITLE", "DESCRIPTION"
             }
         ));
-        moviesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                moviesTableMouseClicked(evt);
-            }
-        });
         jScrollPane1.setViewportView(moviesTable);
 
         btnRefresh.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnRefresh.setText("Refresh");
-        btnRefresh.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnRefreshMouseClicked(evt);
-            }
-        });
         btnRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRefreshActionPerformed(evt);
@@ -181,15 +164,7 @@ public class Movie extends javax.swing.JFrame {
         new Welcome(controller).showFrame();
         this.dispose();
     }                                   
-
-    private void btnRefreshMouseClicked(java.awt.event.MouseEvent evt) {                                        
-        // TODO add your handling code here:
-        
-    }                                       
-
-    private void moviesTableMouseClicked(java.awt.event.MouseEvent evt) {                                         
-      
-    }                                        
+                                                                  
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
         

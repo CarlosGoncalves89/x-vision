@@ -269,7 +269,7 @@ public class Movie implements Model <Movie> {
     }
 
     /**
-     *  Returns if this object is equals to obj.
+     * Returns if this object is equals to obj.
      * @param obj an object
      * @return if this object has the same state of obj 
      */
@@ -289,8 +289,8 @@ public class Movie implements Model <Movie> {
     }
 
     /***
-     * 
-     * @return 
+     * Returns a object string representation. 
+     * @return - all atributtes values in a formatted string. 
      */
     @Override
     public String toString() {

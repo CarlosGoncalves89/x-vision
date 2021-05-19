@@ -21,8 +21,8 @@ import java.sql.Statement;
 public class DbConnection {
     
     private static final String DB_NAME = "xvision"; 
-    private static final String USER = "root"; 
-    private static final String PWD = "cfsa655269";
+    private static final String USER = ""; 
+    private static final String PWD = "";
     
     private static DbConnection dbConnection;
     private Connection connection;
