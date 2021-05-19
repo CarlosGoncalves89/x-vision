@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author 
+ * @author Carlos
  */
 public class CheckOut extends javax.swing.JFrame {
 

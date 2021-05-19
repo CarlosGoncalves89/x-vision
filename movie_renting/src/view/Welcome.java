@@ -10,7 +10,7 @@ import controller.Controller;
 
 /**
  *
- * @author 
+ * @author Thiago
  */
 public class Welcome extends javax.swing.JFrame {
 

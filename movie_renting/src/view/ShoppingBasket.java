@@ -12,11 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
-<<<<<<< HEAD
- * @author 
-=======
- * @author carlos
->>>>>>> de86cd0... Customer methods to return and checkout payment. 
+ * @author Carlos e Thiago
  */
 public class ShoppingBasket extends javax.swing.JFrame {
 

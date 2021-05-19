@@ -14,7 +14,7 @@ import model.Rental;
 
 /**
  * Controller receives the requests from view forms. 
- * @author 
+ * @Carlos 
  */
 public class Controller {
     

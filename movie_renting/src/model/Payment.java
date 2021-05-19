@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 /**
  * Payment is a representation of any charges or receipts values. 
- * @thiago 
+ * @author Thiago 
  */
 public class Payment implements Model<Payment> {
     

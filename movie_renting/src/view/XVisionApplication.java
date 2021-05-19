@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author thiago
+ * @author Thiago
  */
 public class XVisionApplication {
     

@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Models represents any type (or table) thats its objects will be stored or manipulated in a database. 
-    @author Carlos 
+ * @author Carlos 
  * @param <T> T represents the Type name. 
  */
 public interface Model<T> {

@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Customer represents a person who rents a movie in X-vision machine. 
  * 
- * @thiago
+ * @author Thiago
  */
 public class Customer implements Model<Customer>{
     

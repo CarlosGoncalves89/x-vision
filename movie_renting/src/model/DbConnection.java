@@ -16,7 +16,7 @@ import java.sql.Statement;
 /**
  * DbConnection represents a database class operation since create a JDBC connection to execute query and DML 
  * operations as insert, update. 
- * @thiago 
+ * @author Thiago 
  */
 public class DbConnection {
     

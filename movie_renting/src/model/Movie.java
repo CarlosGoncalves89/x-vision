@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 /**
  * Movie is the dvd disc that will be rented for a customer. 
- * @carlos 
+ * @author Carlos 
  */
 public class Movie implements Model <Movie> {
     

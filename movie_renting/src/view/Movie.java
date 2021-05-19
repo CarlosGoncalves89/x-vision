@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author 
+ * @author Carlos
  */
 public class Movie extends javax.swing.JFrame {
     
