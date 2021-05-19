@@ -1,19 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package exception;
 
 /**
- *
- * @author thiago
+ * An exception that provides information on a database access error or other errors 
+ * during query executions. 
+ * 
+ * @author Thiago
  */
 public class QueryModelException extends Throwable {
 
-    /**
-     * Constructs an exception with s message
-     * @param s exception full message
+     /**
+     * Constructs an QueryModelException with a given reason message.
+     * @param s - a description of the exception
      */
     public QueryModelException(String s) {
         super(s);

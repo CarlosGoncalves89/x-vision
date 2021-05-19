@@ -1,19 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package exception;
 
 /**
- *
- * @author carlos
+ * An exception that provides information on a Card Verification Value validation
+ * error or other errors.
+ * @author Carlos
  */
 public class CVVException extends Throwable {
 
     /**
-     * Constructs an exception with s message
-     * @param s exception full message
+     * Constructs an CVVException with a given reason message.
+     * @param s - a description of the exception
      */
     public CVVException(String s) {
         super(s);

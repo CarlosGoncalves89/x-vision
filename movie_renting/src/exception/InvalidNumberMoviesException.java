@@ -2,13 +2,14 @@ package exception;
 
 /**
  * InvalidNumberMoviesException represents an exception of the number of movies allowed. 
- * @author carlos
+ * 
+ * @author Carlos
  */
 public class InvalidNumberMoviesException extends Throwable {
 
-    /**
-     * Constructs an exception with s message
-     * @param s exception full message
+     /**
+     * Constructs an InvalidNumberMoviesException with a given reason message.
+     * @param s - a description of the exception
      */
     public InvalidNumberMoviesException(String s) {
         super(s);

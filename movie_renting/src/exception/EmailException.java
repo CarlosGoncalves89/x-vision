@@ -1,19 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package exception;
 
 /**
- *
- * @author thiago
+ * An exception that provides information on a Email validation error or other errors.
+ * 
+ * @author Thiago
  */
 public class EmailException  extends Throwable {
 
     /**
-     * Constructs an exception with s message
-     * @param s exception full message
+     * Constructs an EmailException with a given reason message.
+     * @param s - a description of the exception
      */
     public EmailException(String s) {
         super(s);
