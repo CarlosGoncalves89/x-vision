@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import exception.CVVException;
@@ -18,12 +13,17 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
- * @carlos 
+ * The Rental class represents a rental of a movie made by a customer. 
+ * A Rental object contains information about the customer, the movie, any offer code 
+ * used, as dates as rental date, expected return date and effective return date. 
+ * Each rental object creates its payments. A Rental is finished by the customer
+ * if and only if the movie was returned until the 10th day after the expected 
+ * return date. After it, a new payment is generated and the movie disc becomes
+ * the customer's. 
+ * 
+ * @author Carlos 
  */
 public class Rental implements Model<Rental> {
     
@@ -38,12 +38,12 @@ public class Rental implements Model<Rental> {
     private List<Payment> payments; 
 
     /**
-     * 
-     * @param movie
-     * @param costumer
-     * @param offerCode
-     * @param rentalDate
-     * @param expectedReturnDate 
+     * Constructs a complete Rental object. 
+     * @param movie the movie disc 
+     * @param costumer the renter
+     * @param offerCode a special available offer code
+     * @param rentalDate the current date and time
+     * @param expectedReturnDate the expected return date with maximum standar hour 8.PM.
      */
     public Rental(Movie movie, Customer costumer, String offerCode, LocalDateTime rentalDate, LocalDateTime expectedReturnDate) {
         this.movie = movie;
@@ -165,8 +165,9 @@ public class Rental implements Model<Rental> {
     }
     
     /**
-     * 
-     * @return 
+     * Returns the return date
+     * @return the return date
+     * null - if the rental is open
      */
     public LocalDateTime getReturnDate(){
         return this.returnDate;
@@ -229,7 +230,7 @@ public class Rental implements Model<Rental> {
     }
 
     /**
-     * Applies some offer code if the code is available to user for the customer.
+     * Applies some offer code if the code is available for the customer uses.
      * @param offerCode code to some offers
      * @return the discount value from offer code.
      */
@@ -261,6 +262,7 @@ public class Rental implements Model<Rental> {
         if(this.expectedReturnDate == null)
             throw new SaveModelException("Rental's expected date can't be null. Creating rental had a problem."); 
         
+        //convert LocalDateTime objects to Timestamp to be stored at database
         Timestamp rentald = Timestamp.valueOf(this.rentalDate); 
         Timestamp rentale = Timestamp.valueOf(this.expectedReturnDate);
         
@@ -276,6 +278,7 @@ public class Rental implements Model<Rental> {
             dbConnection.execute(insert);
             
             this.id = dbConnection.getLastId();
+            //saves the payments related with movie disc
             for(Payment payment : payments){
                 if(!payment.isDone()){
                     payment.save();
@@ -309,6 +312,7 @@ public class Rental implements Model<Rental> {
         
         int end = this.finished ? 1 : 0; 
         
+        //convert LocalDateTime objects to Timestamp to be stored at database
         Timestamp rentald = Timestamp.valueOf(this.rentalDate); 
         Timestamp rentale = Timestamp.valueOf(this.expectedReturnDate);
         Timestamp rentalr = Timestamp.valueOf(this.returnDate);
@@ -350,6 +354,7 @@ public class Rental implements Model<Rental> {
             DbConnection dbConnection = DbConnection.getDbConnection();
             ResultSet rs = dbConnection.query(query);
            
+            // reads all lines (in this case only one) if ResultSet (rs) object is not empty (null)
             while (rs!=  null && rs.next()) {
                 
                 int id = rs.getInt("rental_id"); 
@@ -368,12 +373,14 @@ public class Rental implements Model<Rental> {
                  
                 int finished = rs.getInt("finished");
                 
+                //getting some related date: movie, payments, customer. 
                 Movie m = new Movie();
                 m = m.get("movie_id", String.valueOf(movie_id));
                 Payment p = new Payment(null, null);
                 List<Payment> payments = p.list("rental_id", String.valueOf(id));
-                
                 Customer customer = new Customer(card_number, "");
+                
+                //creating the rental object
                 rental = new Rental(m, customer, offerCode, rental_date, expected_date);
                 rental.setReturnDate(return_date);
                 rental.id = id;
@@ -406,6 +413,8 @@ public class Rental implements Model<Rental> {
         try{
             DbConnection dbConnection = DbConnection.getDbConnection();
             ResultSet rs = dbConnection.query(query);
+            
+            // reads all lines if ResultSet (rs) object is not empty (null)
             while (rs!=  null && rs.next()) {
 
                 int id = rs.getInt("rental_id");
@@ -424,15 +433,15 @@ public class Rental implements Model<Rental> {
 
                 int finished = rs.getInt("finished");
 
+                //getting some related date: movie, payments, customer. 
                 Movie m = new Movie();
                 m = m.get("movie_id", String.valueOf(movie_id));
                 Payment p = new Payment(null, null);
                 List<Payment> payments = p.list("rental_id", String.valueOf(id));
-
-
                 Customer customer = new Customer();
                 customer = customer.get("card_number", card_number);
 
+                //creating the rental object
                 rental = new Rental(m, customer, offerCode, rental_date, expected_date);
                 LocalDateTime return_date = null;
                 if(re_date != null) {
@@ -462,6 +471,7 @@ public class Rental implements Model<Rental> {
         long days = expectedReturnDate.until( returnDate, ChronoUnit.DAYS );
         String [] info = new String[3]; 
         
+        //if diff of days if correct: don't pay any charges and movie becomes available, rental is finished
         if(days == 0 || days == -1){
             this.returnDate = returnDate;
             this.finished = true;
@@ -472,7 +482,7 @@ public class Rental implements Model<Rental> {
             info[1] = "You don't neet to pay extra charges";
             info[2] = "Thank you for chosse us.\nIf you want to rent another movie, just go to home page.";
             return info;
-        } else if(days > 0 && days < 10){
+        } else if(days > 0 && days < 10){ // if the return date is after the expected return date. The customer pays an extra charge od 1.5 euros per day. 
             BigDecimal fixedValue = new BigDecimal("1.50");
             BigDecimal daysB = new BigDecimal(days);
             BigDecimal newValue = fixedValue.multiply(daysB);
@@ -486,7 +496,7 @@ public class Rental implements Model<Rental> {
             info[1] = "You paid some extra charge in total of "+newValue.setScale(2).toString();
             info[2] = "Thank you for chosse us. If you want to rent another movie do it in our home page.";
             return info;
-        } else {
+        } else { // if the return date is after the expected return date 10 days, the customer pays the maximum charge 15 euros and the movie is its. 
             BigDecimal max = new BigDecimal("15.00");
             Payment payment = new Payment(this, max, BigDecimal.ZERO, max, returnDate);
             this.returnDate = returnDate;

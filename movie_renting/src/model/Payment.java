@@ -50,31 +50,31 @@ public class Payment implements Model<Payment> {
     }
 
     /**
-     * 
-     * @return 
+     * Returns the payment source: rental. 
+     * @return rental - payment's source
      */
     public Rental getRental() {
         return rental;
     }
 
     /**
-     * 
-     * @param rental 
+     * Sets the payment source: rental.
+     * @param rental - payment's source
      */
     public void setRental(Rental rental) {
         this.rental = rental;
     }
 
     /**
-     * 
-     * @return 
+     * Returns the payment total
+     * @return total = subtotal - discount
      */
     public BigDecimal getTotal() {
         return total;
     }
 
     /**
-     * 
+     * Sets the payment total
      * @param total 
      */
     public void setTotal(BigDecimal total) {
@@ -82,15 +82,15 @@ public class Payment implements Model<Payment> {
     }
 
     /**
-     * 
-     * @return 
+     * Returns if the payment is done (or registered).
+     * @return True if the payment was registered or False otherwise
      */
     public boolean isDone(){
         return this.done; 
     }
     
     /**
-     * 
+     * Saves a rental payment. 
      */
     @Override
     public void save() {
@@ -113,7 +113,7 @@ public class Payment implements Model<Payment> {
     }
 
     /**
-     * 
+     * Don't do anything.
      */
     @Override
     public void update() {
@@ -121,7 +121,7 @@ public class Payment implements Model<Payment> {
     }
 
     /**
-     * 
+     * Don't do anything
      * @param property
      * @param value
      * @return 
@@ -132,10 +132,10 @@ public class Payment implements Model<Payment> {
     }
 
     /**
-     * 
-     * @param property
-     * @param value
-     * @return 
+     * Returns a list of payments. 
+     * @param property - payment table column
+     * @param value - value to find
+     * @return a list of payment where property = value
      */
     @Override
     public List<Payment> list(String property, String value) {
