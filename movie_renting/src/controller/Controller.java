@@ -238,8 +238,17 @@ public final class Controller {
     public String[] returnMovie(int id) throws SQLException, QueryModelException, UpdateModelException {
         Rental rental = new Rental();
         rental = rental.get("movie_id", String.valueOf(id));
-        String [] value = rental.finish();
-        createSession();
+        String [] value = null;
+        if(rental != null){
+            value = rental.finish();
+            createSession();
+        }else{
+            value = new String[3];
+            value[0] = "No movie";
+            value[1] = "No movie";
+            value[2] = "No movie";
+        }
+        
         return value;
     }
 }

@@ -154,6 +154,10 @@ public class Movie implements Model <Movie> {
     @Override
     public void save() {
         
+        this.title = this.title.replaceAll("'", "\'");
+        this.description = this.description.replaceAll("'", "\'");
+        this.thumbnail = this.thumbnail.replaceAll("'", "\'");
+        
         String insert = String.format("insert into movie (title, description, "
                 + "thumbnail, available) values ('%s', '%s', '%s', '%d')", 
                 this.title, this.description, this.thumbnail, this.available);
@@ -171,12 +175,19 @@ public class Movie implements Model <Movie> {
      */
     @Override
     public void update() {
+        
+        this.title = this.title.replace("'", "\\'");
+        this.description = this.description.replace("'", "\\'");
+        this.thumbnail = this.thumbnail.replace("'", "\\'");
+        
         String updateSql = String.format("update movie set title = '%s', description = '%s', "
                 + "thumbnail = '%s', available = '%d' where movie_id = '%d'", 
                 this.title, this.description, this.thumbnail, this.available, this.id);
+        System.out.println(updateSql);
         try {
             DbConnection dbConnection = DbConnection.getDbConnection();
             dbConnection.execute(updateSql);
+            
         } catch (SQLException ex) {
             Logger.getLogger(Movie.class.getName()).log(Level.SEVERE, null, ex);
         }
